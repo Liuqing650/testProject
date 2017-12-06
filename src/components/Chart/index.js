@@ -1,5 +1,2 @@
-import Line from './line';
-
-export default {
-  Line,
-};
+import Chart from './chart';
+export default Chart;
