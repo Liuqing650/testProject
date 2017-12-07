@@ -4,13 +4,19 @@ import Chart from '../components/Chart'
 import {Button} from 'antd';
 import styles from './IndexPage.css';
 
-function IndexPage() {
-
-  const charts = ['dom', 'line', 'domain1', 'xaxis'];
-
+function IndexPage({dispatch, location, main}) {
+  const chartProps = {
+    ...main,
+    changeValue(data) {
+      dispatch({
+        type:'main/changeValue',
+        payload: data,
+      })
+    }
+  }
   return (
     <div className={styles.normal}>
-      <Chart charts={charts}/>
+      <Chart {...chartProps} />
     </div>
   );
 }
@@ -18,4 +24,4 @@ function IndexPage() {
 IndexPage.propTypes = {
 };
 
-export default connect()(IndexPage);
+export default connect(({ main }) => ({ main}))(IndexPage);

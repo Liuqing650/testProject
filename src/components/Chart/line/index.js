@@ -3,11 +3,9 @@ import * as d3 from 'd3';
 import { Row, Col, Button } from 'antd';
 import styles from './index.less';
 
+const title = '基本图形';
 class Line extends React.Component {
-  state = {
-    charts: ['dom', 'line', 'domain1', 'xaxis'],
-    runChart: '',
-  }
+
   componentWillMount() {
     // this.xScale = d3.scaleLinear();
     // this.xAxis = d3.axisBottom(this.xScale)
@@ -16,22 +14,69 @@ class Line extends React.Component {
   }
 
   componentDidMount() {
-    // this.renderAxis();
-    // this.renderDom();
-
-    // const dataset = [250, 210, 170, 130, 90];
-    // this.renderLine(dataset);
-
-    // const dataset = [1.2, 2.3, 0.9, 1.5, 3.3];
-    // this.renderDomain1(dataset);
-
-    // const dataset = [1.2, 2.3, 0.9, 1.5, 3.3];
-    // this.renderxAxis(dataset);
-
     const dataset = [10, 20, 30, 40, 33, 24, 12, 5];
     this.renderCompleteLine(dataset);
   }
 
+  shouldComponentUpdate(nextProps) {
+    if (nextProps.activeMenu.eventKey) {
+      if (this.props.activeMenu.eventKey) {
+        if (nextProps.activeMenu.eventKey !== this.props.activeMenu.eventKey) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return true;
+      }
+    }
+    return true;
+  }
+
+  componentDidUpdate() {
+    this.changeChart(this.props.activeMenu);
+  }
+
+  changeChart(activeMenu) {
+    let isThisChart = false;
+    let data = [];
+    this.props.menus.map((menu)=> {
+      if (menu.title === title) {
+        data = menu.children;
+        data.map((item, index) => {
+          if (item.id === activeMenu.eventKey) {
+            isThisChart = true;
+            switch (index) {
+              case 0: this.renderDom();
+                break;
+              case 1: this.renderLine([250, 210, 170, 130, 90]);
+                break;
+              case 2: this.renderDomain1([1.2, 2.3, 0.9, 1.5, 3.3]);
+                break;
+              case 3: this.renderxAxis([1.2, 2.3, 0.9, 1.5, 3.3]);
+                break;
+              default: this.renderDom();
+            }
+          }
+        })
+      }
+    })
+    if (!isThisChart) {
+      const svg = d3.select(this.refs.svg);
+      svg.selectAll("rect").remove();
+      svg.selectAll("g").remove();
+      svg.selectAll("text").remove();
+      const test = d3.select(this.refs.test);
+      test.attr('style','display: none;');
+      const svgtest = d3.select(this.refs.svgtest);
+      svgtest.selectAll("rect").remove();
+      svgtest.selectAll("g").remove();
+    } else {
+        const test = d3.select(this.refs.test);
+        test.attr('style', 'display: block;');
+        this.renderCompleteLine([10, 20, 30, 40, 33, 24, 12, 5]);
+    }
+  }
     renderDom() { // Dom元素操作
         const dataset = ["I like dog", "I like cat", "I like snake"];
         const div = d3.select(this.refs.test)
@@ -47,40 +92,44 @@ class Line extends React.Component {
     }
 
     renderLine(dataset, linear, ordinal, xAxis, yAxis) { // 实现简单的条形图
-        const width=300,height=300;
-        const svg = d3.select(this.refs.svgtest)
-                    .attr("width", width)
-                    .attr("height",height);
-        const rectHeight = 25;
-        svg.selectAll("rect")
-            .data(dataset)
-            .enter()
-            .append("rect")
-            .attr("x",20)
-            .attr("y",function(d,i) {
-                return i * rectHeight;
-            })
-            .attr("width",function(d){
-                return linear ? linear(d) :d;
-            })
-            .attr("height",rectHeight - 2)
-            .attr("fill",function(d) {
-                return ordinal ? ordinal(d) : "steelblue";
-            });
-        if (xAxis) {
-          // axis(svg.append("g"));
-          svg.append("g")
-            .attr("class", "axis")
-            .attr("transform", `translate(20,${rectHeight * dataset.length})`)
-            .call(xAxis);
-        }
-        if (yAxis) {
-          // axis(svg.append("g"));
-          svg.append("g")
-            .attr("class", "axis")
-            .attr("transform", `translate(0,${rectHeight})`)
-            .call(yAxis);
-        }
+      const width = 300, height = 300;
+      const padding = { left: 30, right: 30, top: 40, bottom: 20 };
+      const svg = d3.select(this.refs.svgtest)
+                  .attr('transform', 'translate(' + padding.left + ',' + padding.top + ')')
+                  .attr("width", width)
+                  .attr("height",height);
+      const rectHeight = 25;
+      svg.selectAll("rect").remove();
+      svg.selectAll("g").remove();
+      svg.selectAll("rect")
+          .data(dataset)
+          .enter()
+          .append("rect")
+          .attr("x",20)
+          .attr("y",function(d,i) {
+              return i * rectHeight;
+          })
+          .attr("width",function(d){
+              return linear ? linear(d) :d;
+          })
+          .attr("height",rectHeight - 2)
+          .attr("fill",function(d) {
+              return ordinal ? ordinal(d) : "steelblue";
+          });
+      if (xAxis) {
+        // axis(svg.append("g"));
+        svg.append("g")
+          .attr("class", "axis")
+          .attr("transform", `translate(20,${rectHeight * dataset.length})`)
+          .call(xAxis);
+      }
+      if (yAxis) {
+        // axis(svg.append("g"));
+        svg.append("g")
+          .attr("class", "axis")
+          .attr("transform", `translate(0,${rectHeight})`)
+          .call(yAxis);
+      }
     }
 
     renderDomain1(dataset) { // 线性比例尺
@@ -179,8 +228,7 @@ class Line extends React.Component {
     }
 
   render() {
-    console.log('d3-------->', d3);
-    const { charts } = this.state;
+    // console.log('d3-------->', d3);
     return (
       <div>
         <Row>

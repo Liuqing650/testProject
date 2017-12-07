@@ -1,12 +1,12 @@
 import React from 'react';
-import { Layout, Row, Col, Menu, Button } from 'antd';
+import Layout from './layout';
+import nav from './nav/index';
 import Line from './line';
+import Dynamic from './dynamic';
 
-const { Content, Sider } = Layout;
-const ChartPage = ({
-  charts
-}) => {
-
+const ChartPage = (main) => {
+  const { menu, changeValue } = main;
+  const menus = nav;
   function createData(index, num) {
     let data = [];
     for (let i = 0; i < index; i++) {
@@ -19,37 +19,45 @@ const ChartPage = ({
   }
 
   const LineProps = {
+    menus: menus,
     data: createData(10, 100),
     width: 500,
-    changeData(chart) {
-      console.log('chart5555');
+    activeMenu: menu,
+  }
+
+  const DynamicProps = {
+    menus: menus,
+    activeMenu: menu,
+  }
+
+  const layoutProps = {
+    title: 'D3.js',
+    menus: menus,
+    callback(menu) {
+      changeValue({menu: menu});
     }
   }
 
-
-  const changeChart = (chart) => {
-    console.log('chart', chart);
+  const analysisMenu = (menu) => {
+    const tempArr = menu && menu.eventKey ? menu.eventKey.split('-') : ['1'];
+    const index = tempArr[0];
+    switch (index) {
+      case '1':
+        return <Line {...LineProps} />;
+        break;
+      case '2':
+        return <Dynamic {...DynamicProps} />;
+        break;
+      default:
+        return <Line {...LineProps} />;
+        break;
+    }
   }
-  const loopMenu = charts.map((item, index) => {
-    return <Menu.Item key={index}>{item}</Menu.Item>
-  })
+
   return (
     <div>
-      <Layout style={{ minHeight: '100vh' }}>
-        <Sider>
-          <h1>D3.js</h1>
-          <Menu
-            theme="dark"
-            mode="inline"
-            onClick={changeChart}
-            style={{ lineHeight: '100vh' }}
-          >
-            {loopMenu}
-          </Menu>
-        </Sider>
-        <Content>
-          <Line {...LineProps} />
-        </Content>
+      <Layout {...layoutProps}>
+        {analysisMenu(menu)}
       </Layout>
     </div>
   )
