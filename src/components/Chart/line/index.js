@@ -2,6 +2,7 @@ import React from 'react';
 import * as d3 from 'd3';
 import { Row, Col, Button } from 'antd';
 import styles from './index.less';
+import enterPic from '../../../assets/enter.png';
 
 const title = '基本图形';
 class Line extends React.Component {
@@ -18,21 +19,6 @@ class Line extends React.Component {
     this.renderCompleteLine(dataset);
   }
 
-  shouldComponentUpdate(nextProps) {
-    if (nextProps.activeMenu.eventKey) {
-      if (this.props.activeMenu.eventKey) {
-        if (nextProps.activeMenu.eventKey !== this.props.activeMenu.eventKey) {
-          return true;
-        } else {
-          return false;
-        }
-      } else {
-        return true;
-      }
-    }
-    return true;
-  }
-
   componentDidUpdate() {
     this.changeChart(this.props.activeMenu);
   }
@@ -46,6 +32,7 @@ class Line extends React.Component {
         data.map((item, index) => {
           if (item.id === activeMenu.eventKey) {
             isThisChart = true;
+            this.changePic(index);
             switch (index) {
               case 0: this.renderDom();
                 break;
@@ -54,6 +41,8 @@ class Line extends React.Component {
               case 2: this.renderDomain1([1.2, 2.3, 0.9, 1.5, 3.3]);
                 break;
               case 3: this.renderxAxis([1.2, 2.3, 0.9, 1.5, 3.3]);
+                break;
+              case 4: this.renderAttr();
                 break;
               default: this.renderDom();
             }
@@ -74,7 +63,15 @@ class Line extends React.Component {
     } else {
         const test = d3.select(this.refs.test);
         test.attr('style', 'display: block;');
-        this.renderCompleteLine([10, 20, 30, 40, 33, 24, 12, 5]);
+    }
+  }
+
+  changePic(index) {
+    switch (index) {
+      case 4: d3.select(this.refs.pic).append('img').attr('src', enterPic).attr('style', 'height: 300px');
+        break;
+      default: d3.select(this.refs.pic).selectAll("img").remove();
+        break;
     }
   }
     renderDom() { // Dom元素操作
@@ -160,6 +157,21 @@ class Line extends React.Component {
         this.renderLine(dataset, xlinear ? xlinear : false, false, xAxis);
     }
 
+    renderAttr() { // enter与update
+      const dataset = [3, 6, 9, 12, 15];
+      const test = d3.select(this.refs.text)
+      const text = test.selectAll('p');
+      const update = text.data(dataset);
+      const enter = update.enter();
+      update.text(function(d){
+        return 'update' + d;
+      });
+      enter.append("p")
+           .text(function(d){
+        return 'enter' + d;
+      })
+    }
+
     renderCompleteLine(dataset) { // 完整的直线坐标轴
       const width = 400, height= 400;
       // 添加svg画布
@@ -205,6 +217,16 @@ class Line extends React.Component {
                         return xScale(i) - rectPadding;
                       })
                       .attr('y', function (d, i) {
+                        const min = yScale.domain()[0];
+                        return yScale(min) - rectPadding;
+                      })
+                      .transition()
+                      .delay(function(d, i){
+                        return i * 200;
+                      })
+                      .duration(2000)
+                      .ease(d3.easeLinear)
+                      .attr('y', function(d) {
                         return yScale(d) - rectPadding;
                       })
                       .attr('dx', function() {
@@ -244,9 +266,19 @@ class Line extends React.Component {
               <p>cat</p>
               <p ref="delete">pig</p>
             </div>
+            <div ref="text">
+              <p></p>
+              <p></p>
+              <p></p>
+            </div>
           </Col>
         </Row>
-    </div>
+        <Row>
+          <Col span={10} offset={4}>
+            <div ref="pic"></div>
+          </Col>
+        </Row>
+      </div>
     )
   }
 }

@@ -43,13 +43,13 @@ const ChartPage = (main) => {
     const index = tempArr[0];
     switch (index) {
       case '1':
-        return <Line {...LineProps} />;
+        return <Line {...LineProps} isOpen={index} />;
         break;
       case '2':
-        return <Dynamic {...DynamicProps} />;
+        return <Dynamic {...DynamicProps} isOpen={index} />;
         break;
       default:
-        return <Line {...LineProps} />;
+        return <Line {...LineProps} isOpen='1' />;
         break;
     }
   }

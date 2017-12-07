@@ -36,7 +36,7 @@ class Dynamic extends React.Component {
                        .style('fill', 'green');
           circle3.transition()
                  .duration(2000)
-                 .ease('bounce')
+                 .ease(d3.easeLinear)
                  .attr('cx', 300)
                  .style('fill', 'red')
                  .attr('r', 25);
@@ -44,7 +44,6 @@ class Dynamic extends React.Component {
   }
 
   render() {
-    console.log('d3-------->', d3);
     return (
       <div className={styles.wrap}>
         <Row>

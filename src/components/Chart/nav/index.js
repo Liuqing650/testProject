@@ -3,7 +3,8 @@ const menus = [
     { title: 'dom'},
     { title: 'line'},
     { title: 'domain1'},
-    { title: 'xaxis'},
+    { title: 'xaxis' },
+    { title: 'enter&update' },
   ]},
   {title: '动态图形', children:[
     {title: '过渡效果'}
@@ -20,6 +21,7 @@ function changeNav(arr, laryer) {
     }
     if (item.children && item.children.length>0) {
       item.children = changeNav(item.children, item.id);
+      item.parent = item.title;
     }
   })
   return arr;
