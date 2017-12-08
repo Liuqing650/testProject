@@ -32,6 +32,7 @@ class Line extends React.Component {
         data.map((item, index) => {
           if (item.id === activeMenu.eventKey) {
             isThisChart = true;
+            this.resetSvg(null, true);
             this.changePic(index);
             switch (index) {
               case 0: this.renderDom();
@@ -51,18 +52,7 @@ class Line extends React.Component {
       }
     })
     if (!isThisChart) {
-      const svg = d3.select(this.refs.svg);
-      svg.selectAll("rect").remove();
-      svg.selectAll("g").remove();
-      svg.selectAll("text").remove();
-      const test = d3.select(this.refs.test);
-      test.attr('style','display: none;');
-      const svgtest = d3.select(this.refs.svgtest);
-      svgtest.selectAll("rect").remove();
-      svgtest.selectAll("g").remove();
-    } else {
-        const test = d3.select(this.refs.test);
-        test.attr('style', 'display: block;');
+      this.clearAll();
     }
   }
 
@@ -96,8 +86,7 @@ class Line extends React.Component {
                   .attr("width", width)
                   .attr("height",height);
       const rectHeight = 25;
-      svg.selectAll("rect").remove();
-      svg.selectAll("g").remove();
+      this.resetSvg(svg,false);
       svg.selectAll("rect")
           .data(dataset)
           .enter()
@@ -160,13 +149,13 @@ class Line extends React.Component {
     renderAttr() { // enter与update
       const dataset = [3, 6, 9, 12, 15];
       const test = d3.select(this.refs.text)
-      const text = test.selectAll('p');
+      const text = test.selectAll('em');
       const update = text.data(dataset);
       const enter = update.enter();
       update.text(function(d){
         return 'update' + d;
       });
-      enter.append("p")
+      enter.append("em")
            .text(function(d){
         return 'enter' + d;
       })
@@ -248,7 +237,32 @@ class Line extends React.Component {
          .attr('transform', 'translate(' + padding.left + ',' + padding.top + ')')
          .call(yAxis);
     }
-
+    resetSvg(node, isAll) { // 重置svg
+      if(isAll) {
+        const svg = d3.select('svg');
+        svg.selectAll("*").remove();
+        const test = d3.select(this.refs.test);
+        test.attr('style', 'display: block;');
+        // 重现右边图形
+        this.renderCompleteLine([10, 20, 30, 40, 33, 24, 12, 5]);
+      } else {
+        node.selectAll("*").remove()
+      }
+    }
+    clearAll() {
+      // 清除svg
+      const svg = d3.select('svg');
+      svg.selectAll("*").remove();
+      // 清除文字样式
+      const test = d3.select(this.refs.test);
+      test.attr('style', 'display: none;');
+      // 清除文字样式
+      const text = d3.select(this.refs.text)
+      const em = text.selectAll('em').remove();
+      text.append('em')
+      text.append('em')
+      text.append('em')
+    }
   render() {
     // console.log('d3-------->', d3);
     return (
@@ -267,9 +281,9 @@ class Line extends React.Component {
               <p ref="delete">pig</p>
             </div>
             <div ref="text">
-              <p></p>
-              <p></p>
-              <p></p>
+              <em></em>
+              <em></em>
+              <em></em>
             </div>
           </Col>
         </Row>

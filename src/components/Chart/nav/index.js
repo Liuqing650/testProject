@@ -7,7 +7,10 @@ const menus = [
     { title: 'enter&update' },
   ]},
   {title: '动态图形', children:[
-    {title: '过渡效果'}
+    { title: '过渡效果' },
+    { title: '条形统计图' },
+    { title: '径向树' },
+    { title: '力导图' }
   ]}
 ]
 
