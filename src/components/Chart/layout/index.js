@@ -5,6 +5,7 @@ const { Content, Sider } = Layout;
 const LayoutPage = ({
   title,
   menus,
+  defaultOpenKeys,
   callback,
   children
 }) => {
@@ -14,7 +15,7 @@ const LayoutPage = ({
   }
   const loopMenu = (data) => data.map((menu, index) => {
     if (menu.children) {
-      return <SubMenu key={index} title={menu.title}>{loopMenu(menu.children)}</SubMenu>;
+      return <SubMenu key={menu.id} title={menu.title}>{loopMenu(menu.children)}</SubMenu>;
     }
     return <Menu.Item key={menu.id}>{menu.title}</Menu.Item>;
   })
@@ -24,6 +25,7 @@ const LayoutPage = ({
         <Sider>
           <h1>{title}</h1>
           <Menu
+            defaultOpenKeys={defaultOpenKeys}
             theme="dark"
             mode="inline"
             onClick={changeMenu}

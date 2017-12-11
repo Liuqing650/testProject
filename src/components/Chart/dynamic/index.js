@@ -36,7 +36,7 @@ class Dynamic extends React.Component {
                 break;
               case 3: this.renderDrag();
                 break;
-              default: this.renderDynamic();
+              default: this.renderWelcome();
             }
           }
         })
@@ -239,6 +239,7 @@ class Dynamic extends React.Component {
       return [(y = +y) * Math.cos(x -= Math.PI /2), y * Math.sin(x)];
     }
   }
+
   renderDrag() { // 力导图
     const margin = {top: 20, right: 40, bottom: 30, left: 20},
           width = 960 - margin.left - margin.right,
@@ -309,9 +310,20 @@ class Dynamic extends React.Component {
     });
   }
 
+  renderWelcome() { // 初始页面
+    const svg = d3.select(this.refs.svg);
+    svg.append('text')
+      .attr('dy', '1em')
+      .attr('style', 'font-size:100px;')
+      .text('Hello D3.js');
+  }
+
   resetSvg() { // 重置svg
+    const width= 500, height=100;
     const svg = d3.select('svg');
-    svg.selectAll("*").remove()
+    svg.selectAll("*").remove();
+    svg.attr('width', width)
+      .attr('height', height)
   }
 
   render() {

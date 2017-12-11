@@ -45,7 +45,7 @@ class Line extends React.Component {
                 break;
               case 4: this.renderAttr();
                 break;
-              default: this.renderDom();
+              default: this.renderWelcome();
             }
           }
         })
@@ -159,6 +159,14 @@ class Line extends React.Component {
            .text(function(d){
         return 'enter' + d;
       })
+    }
+
+    renderWelcome() { // 初始页面
+      const svg = d3.select(this.refs.svg);
+      svg.append('text')
+        .attr('dy', '1em')
+        .attr('style', 'font-size:100px;')
+        .text('Hello D3.js');
     }
 
     renderCompleteLine(dataset) { // 完整的直线坐标轴

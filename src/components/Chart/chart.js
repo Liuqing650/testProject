@@ -3,10 +3,12 @@ import Layout from './layout';
 import nav from './nav/index';
 import Line from './line';
 import Dynamic from './dynamic';
+import Book from './book';
 
 const ChartPage = (main) => {
   const { menu, changeValue } = main;
-  const menus = nav;
+  const menus = nav.menus;
+  const defaultOpenKeys = nav.defaultOpenKeys;
   function createData(index, num) {
     let data = [];
     for (let i = 0; i < index; i++) {
@@ -30,8 +32,14 @@ const ChartPage = (main) => {
     activeMenu: menu,
   }
 
+  const BookProps = {
+    menus: menus,
+    activeMenu: menu,
+  }
+
   const layoutProps = {
     title: 'D3.js',
+    defaultOpenKeys,
     menus: menus,
     callback(menu) {
       changeValue({menu: menu});
@@ -48,9 +56,11 @@ const ChartPage = (main) => {
       case '2':
         return <Dynamic {...DynamicProps} isOpen={index} />;
         break;
+      case '3':
+        return <Book {...BookProps} isOpen={index} />;
+        break;
       default:
         return <Line {...LineProps} isOpen='1' />;
-        break;
     }
   }
 

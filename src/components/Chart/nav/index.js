@@ -11,8 +11,17 @@ const menus = [
     { title: '条形统计图' },
     { title: '径向树' },
     { title: '力导图' }
-  ]}
+  ]},
+  {
+    title: '书籍相关', children: [
+      { title: '测试效果' },
+      { title: '条形图' },
+      { title: '散点图' }
+    ]
+  }
 ]
+
+let defaultOpenKeys = [];
 
 function changeNav(arr, laryer) {
   arr.map((item,index)=>{
@@ -21,6 +30,7 @@ function changeNav(arr, laryer) {
       item.id = temp.toString();
     } else {
       item.id = laryer + '-' + temp.toString();
+      defaultOpenKeys.push(item.id);
     }
     if (item.children && item.children.length>0) {
       item.children = changeNav(item.children, item.id);
@@ -29,5 +39,9 @@ function changeNav(arr, laryer) {
   })
   return arr;
 }
-const nav = changeNav(menus);
+
+const nav = {
+  menus: changeNav(menus),
+  defaultOpenKeys: defaultOpenKeys
+};
 export default nav;
