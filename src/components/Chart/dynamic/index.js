@@ -213,7 +213,7 @@ class Dynamic extends React.Component {
       const link = g.selectAll(styles.link)
             .data(root.links())
             .enter().append('path')
-              .attr('class', styles.link)
+            .attr('class', styles.link)
               .attr('d', d3.linkRadial()
                 .angle(function(d) { return d.x; })
                 .radius(function(d) { return d.y; })
@@ -226,12 +226,14 @@ class Dynamic extends React.Component {
       node.append('circle')
           .attr('r', 2.5);
       node.append('text')
+          .transition()
           .attr('dy', '0.31em')
           .attr('x', function(d) { return d.x < Math.PI === !d.children ? 6 : -6; })
           .attr('text-anchor', function(d) { return d.x < Math.PI === !d.children ? 'start' : 'end'; })
           .attr('transform', function(d) {
             return 'rotate(' + (d.x < Math.PI ? d.x - Math.PI / 2 : d.x + Math.PI / 2) * 180 / Math.PI + ')';
           })
+          .duration(700)
           .text(function(d) { return d.id.substring(d.id.lastIndexOf('.') + 1); });
     });
 

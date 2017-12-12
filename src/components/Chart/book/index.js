@@ -4,11 +4,8 @@ import { Row, Col, Button } from 'antd';
 import styles from './index.less';
 const ButtonGroup = Button.Group;
 const title = '书籍相关';
+let linedatasete = [50, 43, 120, 87, 99, 167, 142];
 class Book extends React.Component {
-
-  state = {
-    datasete: [50, 43, 120, 87, 99, 167, 142]
-  }
 
   componentDidMount() {
     this.renderLine();
@@ -48,62 +45,180 @@ class Book extends React.Component {
   }
 
   renderLine() { // 条形图
-    const datasete = this.state.datasete;
-    const width = 400, height = 400;
-    const svg = d3.select(this.refs.svg)
-      .attr('width', width)
-      .attr('height', height);
+    const datasete = linedatasete;
     const padding = { top: 20, right: 20, bottom: 20, left: 20 };
     const rectStep = 35; // 矩形宽度（含空白）
     const rectWidth = 30; // 矩形宽度(不含空白)
+    const width = (datasete.length * rectStep) + (padding.left + padding.right), height = 400;
+    const svg = d3.select(this.refs.svg)
+      .attr('width', width)
+      .attr('height', height);
     const rect = svg.selectAll('rect')
-      .data(this.state.datasete)
+      .data(datasete)
       .enter()
       .append('rect')
       .attr('fill', 'steelblue')
       .attr('x', function(d,i) { // 设置矩形坐标
         return padding.left + i * rectStep;
       })
+      .attr('y', function (d) {
+        return height - padding.bottom;
+      })
+      .transition()
       .attr('y', function(d) {
         return height - padding.bottom - d;
       })
+      .duration(function (d) { return d * 10; })
       .attr('width', rectWidth)
-      .transition()
-      .attr('height', function (d) { return d; })
-      .duration(1000);
+      .attr('height', function (d) { return d; });
     const text = svg.selectAll('text')
       .data(datasete)
       .enter()
       .append('text')
-      .attr('fill', 'white')
+      .attr('fill', function (d) {
+        if (d < 15) {
+          return 'steelblue';
+        }
+        return 'white';
+      })
       .attr('font-size','16px;')
       .attr('text-anchor', 'middle')
       .attr('x', function (d, i) { // 设置矩形坐标
         return padding.left + i * rectStep;
       })
       .attr('y', function (d) {
+        return height - padding.bottom;
+      })
+      .transition()
+      .attr('y', function (d) {
+        if (d < 15) {
+          return height - padding.bottom - d - 20;
+        }
         return height - padding.bottom - d;
       })
+      .duration(function (d) { return d * 12; })
       .attr('dx', rectWidth/2)
       .attr('dy', '1em')
       .text(function(d) {
         return d;
       });
     // 测试坐标轴
-    const max = d3.max(datasete);
-    const linear = d3.scaleLinear()
-      .domain([0, 10])
-      .range([0, 300]);
+    // const max = d3.max(datasete);
+    // const linear = d3.scaleLinear()
+    //   .domain([0, 10])
+    //   .range([0, 300]);
     // let ticks = linear.ticks(datasete.length);
     // const tickFomart = linear.tickFormat(datasete.length, '$')
     // for (let index = 0; index < ticks.length; index++) {
     //   ticks[index] = tickFomart(ticks[index]);
     // }
 
-    const axis = d3.axisBottom(linear);
-    const gAxis = svg.append('g')
-      .attr('transform', 'translate(80,50)');
-    axis(gAxis);
+    // const axis = d3.axisBottom(linear);
+    // const gAxis = svg.append('g')
+    //   .attr('transform', 'translate(80,50)');
+    // axis(gAxis);
+  }
+
+  drawLine() {
+    const datasete = linedatasete;
+    const padding = { top: 20, right: 20, bottom: 20, left: 20 };
+    const rectStep = 35; // 矩形宽度（含空白）
+    const rectWidth = 30; // 矩形宽度(不含空白)
+    const svg = d3.select('svg');
+    const width = (datasete.length * rectStep) + (padding.left + padding.right), height = svg.attr("height");
+    svg.transition()
+      .attr('width', width)
+      .duration(700);
+    const updateRect = svg.selectAll('rect')
+      .data(datasete);
+    const enterRect = updateRect.enter();
+    const exitRect = updateRect.exit();
+    // 1.矩形的update部分处理方法
+    updateRect.attr('fill', 'steelblue')
+      .attr('x', function (d, i) { // 设置矩形坐标
+        return padding.left + i * rectStep;
+      })
+      .attr('y', function (d) {
+        return height - padding.bottom - d;
+      })
+      .attr('width', rectWidth)
+      .attr('height', function (d) { return d; });
+    // 2.矩形的enter部分处理方法
+    enterRect.append('rect')
+      .attr('fill', 'steelblue')
+      .attr('x', function (d, i) { // 设置矩形坐标
+        return padding.left + i * rectStep;
+      })
+      .attr('y', function (d) {
+        return height - padding.bottom;
+      })
+      .transition()
+      .attr('y', function (d) {
+        return height - padding.bottom - d;
+      })
+      .duration(function (d) { return d * 10; })
+      .attr('width', rectWidth)
+      .attr('height', function (d) { return d; });
+    // 3.矩形的eixt部分处理方法
+    exitRect.remove();
+    const updateText = svg.selectAll('text')
+      .data(datasete);
+    const addText = updateText.enter();
+    const exitText = updateText.exit();
+    updateText
+      .attr('fill', function (d) {
+        if (d < 15) {
+          return 'steelblue';
+        }
+        return 'white';
+      })
+      .attr('font-size', '16px;')
+      .attr('text-anchor', 'middle')
+      .attr('x', function (d, i) { // 设置矩形坐标
+        return padding.left + i * rectStep;
+      })
+      .attr('y', function (d) {
+        if (d < 15) {
+          return height - padding.bottom - d - 20;
+        }
+        return height - padding.bottom - d;
+      })
+      .attr('dx', rectWidth / 2)
+      .attr('dy', '1em')
+      .text(function (d) {
+        return d;
+      });
+    // 3.文字的exit部分的处理方法
+    exitText.remove();
+    addText
+      .append('text')
+      .attr('fill', function (d) {
+        if (d < 15) {
+          return 'steelblue';
+        }
+        return 'white';
+      })
+      .attr('font-size', '16px;')
+      .attr('text-anchor', 'middle')
+      .attr('x', function (d, i) { // 设置矩形坐标
+        return padding.left + i * rectStep;
+      })
+      .attr('y', function (d) {
+        return height - padding.bottom;
+      })
+      .transition()
+      .attr('y', function (d) {
+        if(d < 15) {
+          return height - padding.bottom - d - 20;
+        }
+        return height - padding.bottom - d;
+      })
+      .duration(function (d) { return d * 12; })
+      .attr('dx', rectWidth / 2)
+      .attr('dy', '1em')
+      .text(function (d) {
+        return d;
+      });
   }
 
   renderScatter() { // 散点图
@@ -137,10 +252,15 @@ class Book extends React.Component {
       .attr('cx', function(d) {
         return padding.left + xScale(d[0]);
       })
+      .attr('cy', function (d) {
+        return height - padding.bottom;
+      })
+      .transition()
       .attr('cy', function(d) {
         return height - padding.bottom - yScale(d[1]);
       })
       .attr('r', 5)
+      .duration(function (d) { return d[0] * 1000; })
     const xAxis = d3.axisBottom(xScale);
     const yAxis = d3.axisLeft(yScale);
     const yGAxis = svg.append('g')
@@ -149,56 +269,6 @@ class Book extends React.Component {
     const xGAxis = svg.append('g')
       .attr('transform', 'translate(' + padding.left + ', ' + yAxisWidth +')')
       .call(xAxis);
-  }
-
-  drawLine() {
-    const datasete = this.state.datasete;
-    const width = 400, height = 400;
-    const padding = { top: 20, right: 20, bottom: 20, left: 20 };
-    const rectStep = 35; // 矩形宽度（含空白）
-    const rectWidth = 30; // 矩形宽度(不含空白)
-    const svg = d3.select('svg');
-    const updateRect = svg.selectAll('rect')
-      .data(datasete);
-    const enterRect = updateRect.enter();
-    const exitRect = updateRect.exit();
-    // 1.矩形的update部分处理方法
-    updateRect.attr('fill', 'steelblue')
-      .attr('x', function (d, i) { // 设置矩形坐标
-        return padding.left + i * rectStep;
-      })
-      .attr('y', function (d) {
-        return height - padding.bottom - d;
-      })
-      .attr('width', rectWidth)
-      .transition()
-      .attr('height', function (d) { return d; })
-      .duration(2000);
-    // 2.矩形的enter部分处理方法
-    enterRect.append('rect')
-      .attr('fill', 'steelblue')
-      .attr('x', function (d, i) { // 设置矩形坐标
-        return padding.left + i * rectStep;
-      })
-      .attr('y', function (d) {
-        return height - padding.bottom - d;
-      })
-      .attr('width', rectWidth)
-      .transition()
-      .attr('height', function (d) { return d; })
-      .duration(2000);
-    // 3.矩形的eixt部分处理方法
-      exitRect.remove();
-
-    const updateText = svg.selectAll('text')
-      .data(datasete);
-    const enterText = updateText.enter();
-
-    const exitText = updateText.exit();
-    // （可以省略）
-    // 1.文字的update部分的处理方法
-    // 2.文字的enter部分的处理方法
-    // 3.文字的exit部分的处理方法
   }
 
   renderTest() { // 测试效果
@@ -259,10 +329,14 @@ class Book extends React.Component {
   }
 
   handleChange = (commond) => {
-    let datasete = this.state.datasete;
+    let datasete = linedatasete;
     switch (commond) {
-      case 'sort':
+      case 'asort':
         this.changeValue(datasete.sort(d3.ascending));
+        this.drawLine();
+        break;
+      case 'esort':
+        this.changeValue(datasete.sort(d3.descending));
         this.drawLine();
         break;
       case 'add':
@@ -281,9 +355,7 @@ class Book extends React.Component {
   }
 
   changeValue(data) {
-    this.setState({
-      datasete: data
-    })
+    linedatasete = data;
   }
 
   render() {
@@ -300,7 +372,8 @@ class Book extends React.Component {
         </Row>
         <div ref="btn">
           <ButtonGroup>
-            <Button onClick={() => this.handleChange('sort')}>排序</Button>
+            <Button onClick={() => this.handleChange('asort')}>顺序排序</Button>
+            <Button onClick={() => this.handleChange('esort')}>倒序排序</Button>
             <Button onClick={() => this.handleChange('add')}>增加数据</Button>
             <Button onClick={() => this.handleChange('del')}>删除数据</Button>
           </ButtonGroup>
