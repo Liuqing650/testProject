@@ -18,6 +18,11 @@ const menus = [
       { title: '条形图' },
       { title: '散点图' }
     ]
+  },
+  {
+    title: '其他工具', children: [
+      { title: '编辑器' }
+    ]
   }
 ]
 

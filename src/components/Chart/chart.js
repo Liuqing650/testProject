@@ -4,6 +4,7 @@ import nav from './nav/index';
 import Line from './line';
 import Dynamic from './dynamic';
 import Book from './book';
+import Editor from './other';
 
 const ChartPage = (main) => {
   const { menu, changeValue } = main;
@@ -37,6 +38,11 @@ const ChartPage = (main) => {
     activeMenu: menu,
   }
 
+  const EditorProps = {
+    menus: menus,
+    activeMenu: menu,
+  }
+
   const layoutProps = {
     title: 'D3.js',
     defaultOpenKeys,
@@ -58,6 +64,9 @@ const ChartPage = (main) => {
         break;
       case '3':
         return <Book {...BookProps} isOpen={index} />;
+        break;
+      case '4':
+        return <Editor {...EditorProps} isOpen={index} />;
         break;
       default:
         return <Line {...LineProps} isOpen='1' />;
