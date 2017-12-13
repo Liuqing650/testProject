@@ -1,2 +1,2 @@
-import Editor from './editor';
-export default Editor;
+import RichEditor from './richEditor';
+export default RichEditor;

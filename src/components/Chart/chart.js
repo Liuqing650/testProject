@@ -4,7 +4,7 @@ import nav from './nav/index';
 import Line from './line';
 import Dynamic from './dynamic';
 import Book from './book';
-import Editor from './other';
+import RichEditor from './other';
 
 const ChartPage = (main) => {
   const { menu, changeValue } = main;
@@ -66,7 +66,7 @@ const ChartPage = (main) => {
         return <Book {...BookProps} isOpen={index} />;
         break;
       case '4':
-        return <Editor {...EditorProps} isOpen={index} />;
+        return <RichEditor {...EditorProps} isOpen={index} />;
         break;
       default:
         return <Line {...LineProps} isOpen='1' />;
