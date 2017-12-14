@@ -10,13 +10,16 @@ const menus = [
     { title: '过渡效果' },
     { title: '条形统计图' },
     { title: '径向树' },
-    { title: '力导图' }
+    { title: '力导图' },
+    { title: '随机文字' }
   ]},
   {
     title: '书籍相关', children: [
       { title: '测试效果' },
       { title: '条形图' },
-      { title: '散点图' }
+      { title: '散点图' },
+      { title: '简单点线图' },
+      { title: '复杂点线图' }
     ]
   },
   {

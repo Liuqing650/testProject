@@ -7,6 +7,7 @@ import miserables from '../../../mock/miserables.txt';
 import styles from './index.less';
 
 const title = '动态图形';
+let activeIndex = 0;
 class Dynamic extends React.Component {
 
   componentDidMount() {
@@ -27,6 +28,7 @@ class Dynamic extends React.Component {
           if (item.id === activeMenu.eventKey) {
             isThisChart = true;
             this.resetSvg();
+            activeIndex = index;
             switch (index) {
               case 0: this.renderDynamic();
                 break;
@@ -35,6 +37,8 @@ class Dynamic extends React.Component {
               case 2: this.renderTree();
                 break;
               case 3: this.renderDrag();
+                break;
+              case 4: this.renderRendowText();
                 break;
               default: this.renderWelcome();
             }
@@ -195,10 +199,14 @@ class Dynamic extends React.Component {
     const margin = {top: 20, right: 40, bottom: 30, left: 20},
           width = 960 - margin.left - margin.right,
           height = 1060 - margin.top - margin.bottom;
+    const zoom = d3.zoom();
     const svg = d3.select(this.refs.svg)
           .attr('width', width)
           .attr('height', height);
     const g = svg.append('g').attr('transform', 'translate(' + (width / 2 + 40) + ',' + (height / 2 +90) + ')' );
+    svg.call(zoom.on('zoom', () => {
+      g.attr('transform', `translate(${d3.event.transform.x}, ${d3.event.transform.y}) scale(${d3.event.transform.k})`);
+    }));
     // 转换为层级结构
     const stratify = d3.stratify()
           .parentId(function(d) { return d.id.substring(0, d.id.lastIndexOf('.')); });
@@ -312,6 +320,34 @@ class Dynamic extends React.Component {
     });
   }
 
+  renderRendowText() { // 随机文字
+    let format = d3.format(",d");
+    const chart = d3.select(this.refs.chart);
+    let number = Math.random() * 1e6;
+    chart.attr('class', 'textChart');
+    chart.append('h1')
+      .transition()
+      .duration(1)
+      .on("start", function repeat() {
+        if (activeIndex !== 4) {
+          return;
+        }
+        let t = d3.active(this)
+          .style("opacity", 0)
+          .remove();
+
+        d3.select('.textChart')
+          .append('h1')
+          .style("opacity", 0)
+          .text(format(++number))
+          .transition(t)
+          .style("opacity", 1)
+          .transition()
+          .delay(1)
+          .on("start", repeat);
+      });
+  }
+
   renderWelcome() { // 初始页面
     const svg = d3.select(this.refs.svg);
     svg.append('text')
@@ -326,6 +362,8 @@ class Dynamic extends React.Component {
     svg.selectAll("*").remove();
     svg.attr('width', width)
       .attr('height', height)
+    const chart = d3.select(this.refs.chart);
+    chart.selectAll('h1').remove();
   }
 
   render() {

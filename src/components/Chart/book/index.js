@@ -1,6 +1,8 @@
 import React from 'react';
 import * as d3 from 'd3';
 import { Row, Col, Button } from 'antd';
+import simple from '../../../mock/simple.txt';
+import nodeline from '../../../mock/nodeline.txt';
 import styles from './index.less';
 const ButtonGroup = Button.Group;
 const title = '书籍相关';
@@ -32,6 +34,10 @@ class Book extends React.Component {
                 this.resetSvg(true);
                 break;
               case 2: this.renderScatter();
+                break;
+              case 3: this.renderSimple();
+                break;
+              case 4: this.renderAnnular();
                 break;
               default: this.renderWelcome();
             }
@@ -269,6 +275,166 @@ class Book extends React.Component {
     const xGAxis = svg.append('g')
       .attr('transform', 'translate(' + padding.left + ', ' + yAxisWidth +')')
       .call(xAxis);
+  }
+
+  renderSimple() { // 简单点线图
+    const width = 960, height = 500;
+    const padding = { top: 30, right: 30, bottom: 30, left: 30 };
+    const xAxisWidth = width - padding.left - padding.right,
+      yAxisWidth = height - padding.top - padding.bottom;
+    const svg = d3.select(this.refs.svg)
+      .attr('width', width)
+      .attr('height', height);
+    // 位置修改
+    const ticked = () => {
+      link.attr("x1", function (d) { return d.source.x; })
+        .attr("y1", function (d) { return d.source.y; })
+        .attr("x2", function (d) { return d.target.x; })
+        .attr("y2", function (d) { return d.target.y; });
+
+      node.attr("cx", function (d) { return d.x; })
+        .attr("cy", function (d) { return d.y; });
+    }
+    // 模拟数据
+    let simulation = d3.forceSimulation()
+      .force("charge", d3.forceManyBody().strength(-200))
+      .force("link", d3.forceLink().id(function (d) { return d.id; }).distance(40))
+      .force("x", d3.forceX(width / 2))
+      .force("y", d3.forceY(height / 2))
+      .on("tick", ticked);
+
+    let link = svg.selectAll('.link');
+    let node = svg.selectAll('.node');
+    d3.text(simple, function (error, record) {
+      if (error) throw error;
+      let graph = JSON.parse(record);
+      simulation.nodes(graph.nodes);
+      simulation.force("link").links(graph.links);
+
+      link = link.data(graph.links)
+        .enter()
+          .append('line')
+          .attr('class', 'link')
+          .attr('stroke', '#999')
+          .attr('stroke-width', '1.5px');
+      node = node.data(graph.nodes)
+        .enter()
+          .append('circle')
+          .attr('class', 'node')
+          .attr('r', 6)
+          .attr('stroke', '#000')
+          .attr('stroke-width', '1.5px')
+          .style('fill', function (d) { return d.id; })
+    })
+  }
+
+  renderAnnular() { // 复杂点线图
+    const width = 960, height = 1000;
+    const padding = { top: 30, right: 30, bottom: 30, left: 30 };
+    const xAxisWidth = width - padding.left - padding.right,
+      yAxisWidth = height - padding.top - padding.bottom;
+    const svg = d3.select(this.refs.svg)
+      .attr('width', width)
+      .attr('height', height);
+    const group = svg.append('g');
+    // 缩放
+    const zoom = d3.zoom();
+    svg.call(zoom.on('zoom', () => {
+      group.attr('transform', `translate(${d3.event.transform.x}, ${d3.event.transform.y}) scale(${d3.event.transform.k})`);
+    }));
+    // 位置修改
+    const ticked = () => {
+      link.attr("x1", function (d) { return d.source.x; })
+        .attr("y1", function (d) { return d.source.y; })
+        .attr("x2", function (d) { return d.target.x; })
+        .attr("y2", function (d) { return d.target.y; });
+
+      node.attr("cx", function (d) { return d.x; })
+        .attr("cy", function (d) { return d.y; });
+    }
+    // 拖拽功能
+    const dragstarted = (d) => {
+      if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+      d.fx = d.x;
+      d.fy = d.y;
+    };
+    const dragged = (d) => {
+      d.fx = d3.event.x;
+      d.fy = d3.event.y;
+    };
+    const dragended = (d) => {
+      if (!d3.event.active) simulation.alphaTarget(0);
+      d.fx = null;
+      d.fy = null;
+    };
+    // 模拟数据
+    let simulation = d3.forceSimulation()
+      .force("charge", d3.forceManyBody().strength(-200))
+      .force("link", d3.forceLink().id(function (d) { return d.name; }).distance(40))
+      .force("x", d3.forceX(width / 2))
+      .force("y", d3.forceY(height / 2))
+      .on("tick", ticked);
+
+    let link = group.selectAll('.link');
+    let node = group.selectAll('.node');
+    d3.text(nodeline, function (error, record) {
+      if (error) throw error;
+      let graph = JSON.parse(record);
+      simulation.nodes(graph.nodes);
+      simulation.force("link").links(graph.links);
+
+      link = link.data(graph.links)
+        .enter()
+          .append('line')
+          .attr('class', 'link')
+          .attr('stroke', '#999')
+          .attr('stroke-width', '1.5px');
+      node = node.data(graph.nodes)
+        .enter()
+          .append('circle')
+          .attr('class', 'node')
+          .attr('r', 10)
+          .attr('stroke', '#000')
+          .attr('stroke-width', '1.5px')
+          .style('fill', function (d) {
+            if(d.cateType === 2) {
+              return 'green'
+            }
+            return 'red';
+          })
+          .call(d3.drag()
+              .on('start', dragstarted) // 开始拖拽 (对应 mousedown 或 touchstart)
+              .on("drag", dragged) // 拖拽中 (对应 mousemove 或 touchmove)
+              .on("end", dragended)); // 拖拽结束 (对应 mouseup, touchend 或 touchcancel)
+      // 添加标题
+      node.append('title')
+        .text(function(d) { return d.name; });
+      node.append('text')
+        .text(function(d) { return d.name; });
+    })
+
+    const drawNode = (nodes, nodesData) => {
+      svgNodes = nodes
+        .selectAll('circle')
+        .data(nodesData, (data) => data.name);
+      svgNodes.exit().remove();
+      const nodeEnter = svgNodes.enter();
+      nodeEnter
+        .append('g')
+        .attr('class', (data)=> {
+          return data.category === 0 ? 'circle mainCompany' : 'circle';
+        })
+        .append('circle')
+        .attr('class', (data) => {
+          return (data.hide && styles.hide) || (data.cateType === 2 && styles.relativePerson) || (data.category === 0 && `${styles.mainCompany}`) || (data.blackList && data.category !== 7 && styles.blackListNodes) || styles.relativeCompany;
+        })
+        .attr('r', (data) => {
+          return (data.category === 0 && 25) || (data.cateType === 2 && 12) || 8;
+        })
+        .attr('fill', (data) => {
+          return (data.cateType === 2 && this.isLegalHandle(data) && `url(#mainPerson)`) || (data.cateType === 2 && 'url(#person)') || '';
+        })
+    }
   }
 
   renderTest() { // 测试效果
