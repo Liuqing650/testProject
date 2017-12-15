@@ -7607,6 +7607,15 @@ h1 {
   stroke: #fff;
   stroke-width: 1.5px;
 }
+.wrap___3L6eL h1 {
+  font: 400 120px/500px "Helvetica Neue";
+  text-align: center;
+  width: 960px;
+  height: 500px;
+  margin: 0;
+  color: #222;
+  position: absolute;
+}
 /* stylelint-disable at-rule-empty-line-before,at-rule-name-space-after,at-rule-no-unknown */
 /* stylelint-disable no-duplicate-selectors */
 /* stylelint-disable declaration-bang-space-before,no-duplicate-selectors */
@@ -8610,6 +8619,94 @@ a.ant-btn-lg {
 }
 a.ant-btn-sm {
   line-height: 22px;
+}
+.wrap___YKtXg {
+  width: 100%;
+  border-bottom: 1px solid #06bcf3ab;
+}
+.tool___2V2iC {
+  padding: 2px;
+  min-height: 30px;
+  line-height: 30px;
+}
+.clearfix___27yLk:before,
+.clearfix___27yLk:after {
+  content: " ";
+  display: table;
+}
+.clearfix___27yLk:after {
+  clear: both;
+}
+.btn___2gPcJ {
+  min-width: 30px;
+  height: 30px;
+  outline: 0;
+  display: inline-block;
+  background-image: none;
+  white-space: nowrap;
+  font-size: 14px;
+  border: 1px solid transparent;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  line-height: 26px;
+  cursor: pointer;
+  -ms-touch-action: manipulation;
+      touch-action: manipulation;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  -webkit-transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  -o-transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  position: relative;
+  color: rgba(0, 0, 0, 0.65);
+  background-color: #fff;
+  border-color: #d9d9d9;
+}
+.btn___2gPcJ:hover,
+.btn___2gPcJ:focus {
+  color: #40a9ff;
+  background-color: #fff;
+  border-color: #40a9ff;
+}
+.btn___2gPcJ:active {
+  -webkit-transition: none;
+  -o-transition: none;
+  transition: none;
+  color: #096dd9;
+  background-color: #fff;
+  border-color: #096dd9;
+}
+.root___S02Lq {
+  font-family: '\'Georgia\', serif';
+  padding: 20;
+  width: 600;
+}
+.root___S02Lq .buttons___2pR73 {
+  margin-bottom: 10;
+}
+.root___S02Lq .urlInputContainer___3G2zs {
+  margin-bottom: 10;
+}
+.root___S02Lq .urlInput___2znSH {
+  font-family: '\'Georgia\', serif';
+  margin-right: 10;
+  padding: 3;
+}
+.root___S02Lq .editor___1fT0n {
+  border: '1px solid #ccc';
+  cursor: 'text';
+  min-height: 80;
+  padding: 10;
+}
+.root___S02Lq .button___3_mvs {
+  margin-top: 10;
+  text-align: 'center';
+}
+.root___S02Lq .link___2DHoS {
+  color: '#3b5998';
+  text-decoration: underline;
 }
 
 .normal___1LGbL {

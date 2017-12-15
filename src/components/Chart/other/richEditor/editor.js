@@ -53,12 +53,17 @@ class MyEditor extends React.Component {
   }
 
   // 文本样式修改
-  _onBoldClick = () => { this.onChange(RichUtils.toggleInlineStyle(this.state.editorState, 'BOLD')); }; // 加粗
-  _onItalicClick = () => { this.onChange(RichUtils.toggleInlineStyle(this.state.editorState, 'ITALIC')); }; // 倾斜
-  _onUnderLineClick = () => { this.onChange(RichUtils.toggleInlineStyle(this.state.editorState, 'UNDERLINE')); }; // 下划线
-  _onCodeClick = () => { this.onChange(RichUtils.toggleInlineStyle(this.state.editorState, 'CODE')); }; // 代码块
+  _onBoldClick = () => { this._toggleInlineStyle('BOLD'); }; // 加粗
+  _onItalicClick = () => { this._toggleInlineStyle('ITALIC'); }; // 倾斜
+  _onUnderLineClick = () => { this._toggleInlineStyle('UNDERLINE'); }; // 下划线
+  _onCodeClick = () => { this._toggleInlineStyle('CODE'); }; // 代码块
 
-  onChange = (editorState) => {
+  _toggleInlineStyle = (inlineStyle) => {
+    this._onChange(
+      RichUtils.toggleInlineStyle(this.state.editorState, inlineStyle)
+    );
+  }
+  _onChange = (editorState) => {
     this.setState({ editorState })
   }
   myKeyBindingFn = (e) => {
@@ -107,11 +112,11 @@ class MyEditor extends React.Component {
     }
     return (
       <div className={styles.wrap}>
-        <button onClick={this._onBoldClick}>B</button>
+        <button onClick={() => {this._toggleInlineStyle('BOLD')}}>B</button>
         <Tools { ...toolProps } />
         <Editor
           editorState={this.state.editorState}
-          onChange={this.onChange}
+          onChange={this._onChange}
           handleKeyCommand={this.handleKeyCommand}
           keyBindingFn={this.myKeyBindingFn}
          />
