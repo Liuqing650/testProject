@@ -24,7 +24,10 @@ const menus = [
   },
   {
     title: '其他工具', children: [
-      { title: '编辑器' }
+      { title: '编辑器' },
+      { title: 'QuillEd' },
+      { title: 'Markdown' },
+      { title: '高阶组件' },
     ]
   }
 ]

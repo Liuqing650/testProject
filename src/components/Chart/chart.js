@@ -4,7 +4,7 @@ import nav from './nav/index';
 import Line from './line';
 import Dynamic from './dynamic';
 import Book from './book';
-import RichEditor from './other';
+import OtherComponent from './other';
 
 const ChartPage = (main) => {
   const { menu, changeValue } = main;
@@ -38,7 +38,7 @@ const ChartPage = (main) => {
     activeMenu: menu,
   }
 
-  const EditorProps = {
+  const OtherComponentProps = {
     menus: menus,
     activeMenu: menu,
   }
@@ -51,7 +51,6 @@ const ChartPage = (main) => {
       changeValue({menu: menu});
     }
   }
-
   const analysisMenu = (menu) => {
     const tempArr = menu && menu.eventKey ? menu.eventKey.split('-') : ['1'];
     const index = tempArr[0];
@@ -66,7 +65,7 @@ const ChartPage = (main) => {
         return <Book {...BookProps} isOpen={index} />;
         break;
       case '4':
-        return <RichEditor {...EditorProps} isOpen={index} />;
+        return <OtherComponent {...OtherComponentProps} isOpen={index} />;
         break;
       default:
         return <Line {...LineProps} isOpen='1' />;

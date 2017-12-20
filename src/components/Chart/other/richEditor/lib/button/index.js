@@ -7,7 +7,7 @@ const Button = ({
   children,
   title
 }) => {
-  console.log('type--->', type);
+  // console.log('type--->', type);
   const outPut = () => {
     switch (type) {
       case 'primary':

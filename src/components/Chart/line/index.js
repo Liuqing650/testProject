@@ -274,7 +274,7 @@ class Line extends React.Component {
   render() {
     // console.log('d3-------->', d3);
     return (
-      <div>
+      <div className={styles.wrap}>
         <Row>
           <Col span={12}>
             <svg ref="svg">
