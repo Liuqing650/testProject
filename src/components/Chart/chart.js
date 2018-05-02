@@ -4,6 +4,7 @@ import nav from './nav/index';
 import Line from './line';
 import Dynamic from './dynamic';
 import Book from './book';
+import Tree from './tree';
 import OtherComponent from './other';
 
 const ChartPage = (main) => {
@@ -38,6 +39,11 @@ const ChartPage = (main) => {
     activeMenu: menu,
   }
 
+  const TreeComponentProps = {
+    menus: menus,
+    activeMenu: menu,
+  }
+
   const OtherComponentProps = {
     menus: menus,
     activeMenu: menu,
@@ -45,7 +51,7 @@ const ChartPage = (main) => {
 
   const layoutProps = {
     title: 'D3.js',
-    defaultOpenKeys,
+    defaultOpenKeys: ['sub-4'],
     menus: menus,
     callback(menu) {
       changeValue({menu: menu});
@@ -65,6 +71,9 @@ const ChartPage = (main) => {
         return <Book {...BookProps} isOpen={index} />;
         break;
       case '4':
+        return <Tree {...TreeComponentProps} isOpen={index} />;
+        break;
+      case '5':
         return <OtherComponent {...OtherComponentProps} isOpen={index} />;
         break;
       default:

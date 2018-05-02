@@ -6,6 +6,7 @@ const LayoutPage = ({
   title,
   menus,
   defaultOpenKeys,
+  defaultSelectedKeys,
   callback,
   children
 }) => {
@@ -15,7 +16,7 @@ const LayoutPage = ({
   }
   const loopMenu = (data) => data.map((menu, index) => {
     if (menu.children) {
-      return <SubMenu key={menu.id} title={menu.title}>{loopMenu(menu.children)}</SubMenu>;
+      return <SubMenu key={`sub-${menu.id}`} title={menu.title}>{loopMenu(menu.children)}</SubMenu>;
     }
     return <Menu.Item key={menu.id}>{menu.title}</Menu.Item>;
   })

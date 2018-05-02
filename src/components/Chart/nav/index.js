@@ -23,6 +23,11 @@ const menus = [
     ]
   },
   {
+    title: '树型图', children: [
+      { title: '树型效果' }
+    ]
+  },
+  {
     title: '其他工具', children: [
       { title: '编辑器' },
       { title: 'QuillEd' },
