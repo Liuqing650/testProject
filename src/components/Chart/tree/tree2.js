@@ -38,13 +38,16 @@ class TreeCom extends React.Component {
     }
   }
   renderTree = () => {
+    const margin = { top: 20, right: 90, bottom: 30, left: 90 };
     //绘制svg图形
     const svg = d3.select(this.refs.svg);
     //定义布局范围
     const width = svg.attr("width");
     const height = svg.attr("height");
+    const width = 660 - margin.left - margin.right;
+    const height = 500 - margin.top - margin.bottom;
     svg.append("g")
-    const g = svg.attr("transform", "translate(80,80)");//定义偏移量
+    const g = svg.attr("transform", "translate(" + margin.left + ",80)");//定义偏移量
 
     //定义D3树布局范围
     const tree = d3.tree()

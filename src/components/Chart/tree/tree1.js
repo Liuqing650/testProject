@@ -55,15 +55,37 @@ class Tree extends React.Component {
     const margin = { top: 20, right: 90, bottom: 30, left: 90 },
       width = 660 - margin.left - margin.right,
       height = 500 - margin.top - margin.bottom;
+    const orientations = {
+      "topToBottom": {
+        size: [width, height],
+        x: function (d) { return d.x; },
+        y: function (d) { return d.y; }
+      },
+      "rightToLeft": {
+        size: [height, width],
+        x: function (d) { return width - d.y; },
+        y: function (d) { return d.x; }
+      },
+      "bottomToTop": {
+        size: [width, height],
+        x: function (d) { return d.x; },
+        y: function (d) { return height - d.y; }
+      },
+      "leftToRight": {
+        size: [height, width],
+        x: function (d) { return d.y; },
+        y: function (d) { return d.x; }
+      }
+    };
     const { separationIndex } = this.state;
+    const layout = orientations.topToBottom
     // 声明一个树型布局,分配布局的大小
     // declares a tree layout and assigns the size
     const treemap = d3.tree()
-      .size([height, width])
+      .size(layout.size)
       .separation(function (a, b) { // 扩展层级高度
         return (a.parent === b.parent ? 1 : 2);
       });
-
     // 加载外部数据
     // d3.json(treeJson, function (error, treeData) {
       // if (error) throw error;
@@ -93,7 +115,6 @@ class Tree extends React.Component {
       .enter().append("path")
       .attr("class", "link")
       .attr("d", (d) => {
-        console.log('d------->', d);
         return "M" + d.y + "," + d.x
           + "C" + (d.y + d.parent.y) / 2 + "," + d.x
           + " " + (d.y + d.parent.y) / 2 + "," + d.parent.x
@@ -113,20 +134,39 @@ class Tree extends React.Component {
         return "translate(" + d.y + "," + d.x + ")";
       });
 
+    // 为每一个节点添加矩形
+    node.append("rect")
+      .attr("width", 80)
+      .attr("height", 60)
+      .attr("class", function (d) {
+        return d.children ? 'blueRect' : 'whiteRect';
+      })
+      .attr("x", function (d) {
+        return -40;
+      })
+      .attr("y", function (d) {
+        return -30;
+      });
     // 为每一个节点添加小原点
     // adds the circle to the node
     node.append("circle")
-      .attr("r", 10);
-    // node.append("rect")
-    //   .attr("r", 10);
+      .attr("class", "node-twinkle")
+      .attr("r", function (d) { return d.children ? 0 : 10; })
+      .attr("cx", function (d) {
+        return 53;
+      });
 
     // 为每一个节点添加文字
     // adds the text to the node
     node.append("text")
       .attr("dy", ".35em")
-      .attr("x", function (d) { return d.children ? -13 : 13; })
+      .attr("x", -30)
+      .attr("class", function (d) {
+        return d.children ? 'childText' : 'lastText';
+      })
       .style("text-anchor", function (d) {
-        return d.children ? "end" : "start";
+        // return d.children ? "end" : "start";
+        return "start";
       })
       .text(function (d) { return d.data.name; });
     // });
@@ -148,10 +188,10 @@ class Tree extends React.Component {
     return (
       <div>
         <div ref="treeChart">
-          <svg ref="svg">
+          <svg className="svgWrap" ref="svg">
           </svg>
         </div>
-        <Row>
+        {/* <Row>
           <Col span={12}>
             <Slider min={0.1} max={2} onChange={this.onSliderChange} step={0.01} value={this.state.inputValue} />
           </Col>
@@ -164,7 +204,7 @@ class Tree extends React.Component {
               onChange={this.onSliderChange}
             />
           </Col>
-        </Row>
+        </Row> */}
       </div>
     );
   }
