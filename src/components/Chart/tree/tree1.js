@@ -1,20 +1,22 @@
 import React from 'react';
 import * as d3 from 'd3';
-import { Slider, InputNumber, Row, Col } from 'antd';
+import { Slider, InputNumber, Row, Col, Radio } from 'antd';
 import './tree1.less';
 import treeData from '../../../mock/treeData.json';
 
+let tree;
 class Tree extends React.Component {
 
   state = {
     separationIndex: 1,
-    inputValue: 1,
+    action: 'horizontal'
   };
   componentDidMount() {
     this.renderTree();
   }
 
   componentDidUpdate(newProps) {
+    this.resetSvg();
     this.renderTree();
     if (this.props.activeMenu !== newProps.activeMenu) {
       this.changeChart(this.props.activeMenu);
@@ -52,125 +54,195 @@ class Tree extends React.Component {
     }
   }
   renderTree = () => {
-    const margin = { top: 20, right: 90, bottom: 30, left: 90 },
+    const margin = { top: 50, right: 90, bottom: 60, left: 90 },
       width = 660 - margin.left - margin.right,
       height = 500 - margin.top - margin.bottom;
+    const vscale = {
+      x: 2,
+      y: 1
+    };
     const orientations = {
-      "topToBottom": {
+      "horizontal": { // 水平布局
         size: [width, height],
-        x: function (d) { return d.x; },
-        y: function (d) { return d.y; }
+        nodeSize: [width / 2, height / 2],
+        svgSize: {
+          width: width + margin.left + margin.right,
+          height: height + margin.top + margin.bottom
+        },
+        gPosition: "translate(" + margin.left + "," + margin.top + ")",
+        linkLayout: (d) => {
+          return "M" + d.y + "," + d.x
+            + "C" + (d.y + d.parent.y) / 2 + "," + d.x
+            + " " + (d.y + d.parent.y) / 2 + "," + d.parent.x
+            + " " + d.parent.y + "," + d.parent.x;
+        },
+        linkLayoutTarget: (d) => {
+          return "M" + d.source.y + "," + d.source.x
+            + "C" + (d.source.y + d.target.y) / 2 + "," + d.source.x
+            + " " + (d.source.y + d.target.y) / 2 + "," + d.target.x
+            + " " + d.target.y + "," + d.target.x;
+        },
+        nodeLayout: (d) => {
+          return "translate(" + d.y + "," + d.x + ")";
+        }
       },
-      "rightToLeft": {
-        size: [height, width],
-        x: function (d) { return width - d.y; },
-        y: function (d) { return d.x; }
-      },
-      "bottomToTop": {
+      "vertical": { // 垂直布局
         size: [width, height],
-        x: function (d) { return d.x; },
-        y: function (d) { return height - d.y; }
-      },
-      "leftToRight": {
-        size: [height, width],
-        x: function (d) { return d.y; },
-        y: function (d) { return d.x; }
+        nodeSize: [width / 2, height / 2],
+        svgSize: {
+          width: width + margin.left + margin.right,
+          height: height + margin.top + margin.bottom
+        },
+        gPosition: "translate(" + (-margin.left - 30) + "," + margin.top + ")",
+        linkLayout: (d) => {
+          return "M" + d.x * (vscale.x || 1) + "," + d.y / (vscale.y || 1)
+            + "C" + (d.x + d.parent.x) / (vscale.x / 2 || 2) + "," + d.y / (vscale.y || 1)
+            + " " + (d.x + d.parent.x) / (vscale.x / 2 || 2) + "," + d.parent.y / (vscale.y || 1)
+            + " " + d.parent.x * (vscale.x || 1) + "," + d.parent.y / (vscale.y || 1);
+        },
+        linkLayoutTarget: (d) => {
+          return "M" + d.target.x + "," + d.target.y
+            + "C" + (d.target.x + d.source.x) / 2 + "," + d.target.y
+            + " " + (d.target.x + d.source.x) / 2 + "," + d.source.y
+            + " " + d.source.x + "," + d.source.y;
+        },
+        nodeLayout: (d) => {
+          return "translate(" + d.x * (vscale.x || 1) + "," + d.y / (vscale.y || 1) + ")";
+        }
       }
     };
-    const { separationIndex } = this.state;
-    const layout = orientations.topToBottom
-    // 声明一个树型布局,分配布局的大小
-    // declares a tree layout and assigns the size
-    const treemap = d3.tree()
+    // 开关函数
+    const toggle = (d) =>{
+      if (d.children) {
+        //如果有子节点
+        d._children = d.children; //将该子节点保存到 _children
+        d.children = null;  //将子节点设置为null
+      } else {
+        //如果没有子节点
+        d.children = d._children; //从 _children 取回原来的子节点
+        d._children = null; //将 _children 设置为 null
+      }
+    }
+    const { action } = this.state;
+    const layout = orientations[action];
+
+    const zoom = d3.zoom(); // 缩放事件
+    const drag = d3.drag(); // 拖拽事件
+
+    const svg = d3.select(this.refs.svg)
+      .attr("width", layout.svgSize.width)
+      .attr("height", layout.svgSize.height),
+      g = svg.append("g")
+        .attr("transform", layout.gPosition);
+    svg.call(zoom.on('zoom', () => {
+      g.attr('transform', `translate(${d3.event.transform.x}, ${d3.event.transform.y}) scale(${d3.event.transform.k})`);
+    }));
+    svg.call(drag.on('drag', () => {
+      g.attr("transform", "translate(" + d3.event.y + "," + d3.event.y + ")")
+    }))
+
+    tree = d3.tree()
       .size(layout.size)
+      // .nodeSize(layout.nodeSize)
       .separation(function (a, b) { // 扩展层级高度
-        return (a.parent === b.parent ? 1 : 2);
+        return (a.parent === b.parent ? 1 : 2) / a.depth;
       });
-    // 加载外部数据
-    // d3.json(treeJson, function (error, treeData) {
-      // if (error) throw error;
-    // 分配数据到层次布局上,用于建立父子关系
-    //  assigns the data to a hierarchy using parent-child relationships
-    let nodes = d3.hierarchy(treeData, function (d) {
+    let nodes = d3.hierarchy(treeData, function (d) { // 分配数据到层次布局上,用于建立父子关系
       return d.children;
     });
-    // 将节点数据映射到树形布局
-    // maps the node data to the tree layout
-    nodes = treemap(nodes);
+    nodes = tree(nodes); // 将节点数据映射到树形布局
 
-    // append the svg object to the body of the page
-    // appends a 'group' element to 'svg'
-    // moves the 'group' element to the top left margin
-    const svg = d3.select(this.refs.svg)
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom),
-      g = svg.append("g")
-        .attr("transform",
-          "translate(" + margin.left + "," + margin.top + ")");
-
-    // 各个节点之间添加连线
-    // adds the links between the nodes
-    const link = g.selectAll(".link")
-      .data(nodes.descendants().slice(1)) // 除了顶级不需要连线,其他节点开始计算节点连线
+    console.log('nodes------>', nodes);
+    console.log('descendants------>', nodes.descendants());
+    console.log('links------>', nodes.links());
+    const link = g.selectAll(".link") // 各个节点之间添加连线
+      // .data(nodes.descendants().slice(1)) // 除了顶级不需要连线,其他节点开始计算节点连线
+      .data(nodes.links()) // 除了顶级不需要连线,其他节点开始计算节点连线
       .enter().append("path")
       .attr("class", "link")
-      .attr("d", (d) => {
-        return "M" + d.y + "," + d.x
-          + "C" + (d.y + d.parent.y) / 2 + "," + d.x
-          + " " + (d.y + d.parent.y) / 2 + "," + d.parent.x
-          + " " + d.parent.y + "," + d.parent.x;
-      });
-
-    // 将每个节点添加为一个组
-    // adds each node as a group
-    const node = g.selectAll(".node")
+      .attr("d", layout.linkLayoutTarget)
+      // .attr("d", layout.linkLayout);
+    const node = g.selectAll(".node") // 将每个节点添加为一个组
       .data(nodes.descendants())
       .enter().append("g")
       .attr("class", function (d) {
         return "node" +
           (d.children ? " node--internal" : " node--leaf");
       })
-      .attr("transform", function (d) {
-        return "translate(" + d.y + "," + d.x + ")";
-      });
-
-    // 为每一个节点添加矩形
-    node.append("rect")
-      .attr("width", 80)
-      .attr("height", 60)
-      .attr("class", function (d) {
-        return d.children ? 'blueRect' : 'whiteRect';
-      })
-      .attr("x", function (d) {
-        return -40;
-      })
-      .attr("y", function (d) {
-        return -30;
-      });
-    // 为每一个节点添加小原点
-    // adds the circle to the node
-    node.append("circle")
+      .attr("transform", layout.nodeLayout);
+    // node.append("rect") // 为每一个节点添加矩形
+    //   .attr("width", 80)
+    //   .attr("height", 60)
+    //   .attr("class", function (d) {
+    //     return d.children ? 'blueRect' : 'whiteRect';
+    //   })
+    //   .attr("x", function (d) {
+    //     return -40;
+    //   })
+    //   .attr("y", function (d) {
+    //     return -30;
+    //   });
+    node.append("circle") // 为每一个节点添加小原点
       .attr("class", "node-twinkle")
-      .attr("r", function (d) { return d.children ? 0 : 10; })
-      .attr("cx", function (d) {
-        return 53;
-      });
+      .attr("r", function (d) { return d.children ? 8 : 10; })
+      // .attr("cx", function (d) {
+      //   return d.children ? 49 : 53;
+      // });
+    // node.append("text") // 为每一个节点添加文字
+    //   .attr("dy", ".35em")
+    //   .attr("x", -30)
+    //   .attr("class", function (d) {
+    //     return d.children ? 'childText' : 'lastText';
+    //   })
+    //   .style("text-anchor", function (d) {
+    //     // return d.children ? "end" : "start";
+    //     return "start";
+    //   })
+    //   .text(function (d) { return d.data.name; });
+    // // });
 
-    // 为每一个节点添加文字
-    // adds the text to the node
-    node.append("text")
-      .attr("dy", ".35em")
-      .attr("x", -30)
-      .attr("class", function (d) {
-        return d.children ? 'childText' : 'lastText';
-      })
-      .style("text-anchor", function (d) {
-        // return d.children ? "end" : "start";
-        return "start";
-      })
-      .text(function (d) { return d.data.name; });
-    // });
+    // 重构函数
+    const redraw = (source) => {
+      //重新计算节点和连线
+      const _nodes = tree.nodes(root);
+      const links = tree.links(_nodes);
+
+      //获取节点的update部分
+      const nodeUpdate = svg.selectAll(".node")
+        .data(_nodes, function (d) { return d.name; });
+
+      //获取节点的enter部分
+      const nodeEnter = nodeUpdate.enter();
+
+      //在给enter部分添加新的节点时，添加监听器，应用开关切换函数
+      nodeEnter.append("g")
+        .on("click", function (d) {
+          toggle(d);
+          redraw(d);
+        });
+    }
   };
+  // 重构函数
+  redraw = (source) => {
+    //重新计算节点和连线
+    const nodes = tree.nodes(root);
+    const links = tree.links(nodes);
+
+    //获取节点的update部分
+    const nodeUpdate = svg.selectAll(".node")
+      .data(_nodes, function (d) { return d.name; });
+
+    //获取节点的enter部分
+    const nodeEnter = nodeUpdate.enter();
+
+    //在给enter部分添加新的节点时，添加监听器，应用开关切换函数
+    nodeEnter.append("g")
+      .on("click", function (d) {
+        toggle(d);
+        redraw(d);
+      });
+  }
+
   resetSvg() { // 重置svg
     const width = 800, height = 600;
     const svg = d3.select('svg');
@@ -178,10 +250,9 @@ class Tree extends React.Component {
     svg.attr('width', width)
       .attr('height', height);
   }
-  onSliderChange = (value) => {
+  onSliderChange = (even) => {
     this.setState({
-      inputValue: value,
-      separationIndex: value
+      action: even.target.value
     });
   }
   render() {
@@ -191,20 +262,14 @@ class Tree extends React.Component {
           <svg className="svgWrap" ref="svg">
           </svg>
         </div>
-        {/* <Row>
+        <Row>
           <Col span={12}>
-            <Slider min={0.1} max={2} onChange={this.onSliderChange} step={0.01} value={this.state.inputValue} />
+            <Radio.Group value={this.state.action} onChange={this.onSliderChange}>
+              <Radio.Button value="horizontal">水平布局</Radio.Button>
+              <Radio.Button value="vertical">垂直布局</Radio.Button>
+            </Radio.Group>
           </Col>
-          <Col span={4}>
-            <InputNumber
-              min={0.1}
-              max={2}
-              style={{ marginLeft: 16 }}
-              value={this.state.inputValue}
-              onChange={this.onSliderChange}
-            />
-          </Col>
-        </Row> */}
+        </Row>
       </div>
     );
   }
