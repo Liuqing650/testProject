@@ -134,6 +134,46 @@ class Tree extends React.Component {
       .attr("height", layout.svgSize.height),
       g = svg.append("g")
         .attr("transform", layout.gPosition);
+      // 添加svg 标记
+    svg.append("defs").append("marker")
+      .attr("id", "arrow").attr("viewBox", "0 0 12 12")
+      .attr("markerUnits", "strokeWidth")
+      .attr("refX", 11)
+      .attr("refY", 6)
+      .attr("markerWidth", 24)
+      .attr("markerHeight", 24)
+      .attr("orient", "auto").append("path")
+      .attr("d", "M2,2 L10,6 L2,10 L6,6 L2,2")
+      .attr("fill", P);
+
+    svg.append("defs").append("marker")
+      .attr("id", "arrowCompany")
+      .attr("viewBox", "0 0 12 12")
+      .attr("markerUnits", "strokeWidth")
+      .attr("refX", 11)
+      .attr("refY", 6)
+      .attr("markerWidth", 24)
+      .attr("markerHeight", 24)
+      .attr("orient", "auto")
+      .append("path")
+      .attr("d", "M2,2 L10,6 L2,10 L6,6 L2,2")
+      .attr("fill", A);
+    
+    svg.append("defs").append("marker")
+      .attr("id", "arrowPerson")
+      .attr("viewBox", "0 0 12 12")
+      .attr("markerUnits", "strokeWidth")
+      .attr("refX", 11)
+      .attr("refY", 6)
+      .attr("markerWidth", 24)
+      .attr("markerHeight", 24)
+      .attr("orient", "auto")
+      .append("path")
+      .attr("d", "M2,2 L10,6 L2,10 L6,6 L2,2")
+      .attr("fill", L);
+    
+    svg
+
     svg.call(zoom.on('zoom', () => {
       g.attr('transform', `translate(${d3.event.transform.x}, ${d3.event.transform.y}) scale(${d3.event.transform.k})`);
     }));
@@ -152,9 +192,7 @@ class Tree extends React.Component {
     });
     nodes = tree(nodes); // 将节点数据映射到树形布局
 
-    console.log('nodes------>', nodes);
-    console.log('descendants------>', nodes.descendants());
-    console.log('links------>', nodes.links());
+    
     const link = g.selectAll(".link") // 各个节点之间添加连线
       // .data(nodes.descendants().slice(1)) // 除了顶级不需要连线,其他节点开始计算节点连线
       .data(nodes.links()) // 除了顶级不需要连线,其他节点开始计算节点连线
@@ -200,27 +238,6 @@ class Tree extends React.Component {
     //   })
     //   .text(function (d) { return d.data.name; });
     // // });
-
-    // 重构函数
-    const redraw = (source) => {
-      //重新计算节点和连线
-      const _nodes = tree.nodes(root);
-      const links = tree.links(_nodes);
-
-      //获取节点的update部分
-      const nodeUpdate = svg.selectAll(".node")
-        .data(_nodes, function (d) { return d.name; });
-
-      //获取节点的enter部分
-      const nodeEnter = nodeUpdate.enter();
-
-      //在给enter部分添加新的节点时，添加监听器，应用开关切换函数
-      nodeEnter.append("g")
-        .on("click", function (d) {
-          toggle(d);
-          redraw(d);
-        });
-    }
   };
   // 重构函数
   redraw = (source) => {
