@@ -1,7 +1,7 @@
 import React from 'react';
 import * as d3 from 'd3';
 import { Slider, InputNumber, Row, Col, Radio } from 'antd';
-import './tree1.less';
+import './chart.less';
 import treeData from '../../../mock/treeData.json';
 
 let tree;
@@ -318,6 +318,7 @@ class Tree extends React.Component {
           })
           .attr("transform", function (even) {
             return "translate(" + even.x + ", " + even.y + ")"
+            // return "translate(" + _nodeData.x0 + ", " + _nodeData.y0 + ")"
           })
           .style("cursor", "default").on("mouseover", function (even) {
             // identifier ==> t

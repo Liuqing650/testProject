@@ -1,0 +1,523 @@
+:global {
+  .chart-content {
+      background-color: #fff;
+      position: relative
+  }
+
+  .chart-content,.chart-section {
+      width: 100%;
+      min-height: 600px
+  }
+
+  .new-network-legend {
+      position: absolute;
+      left: 40px;
+      bottom: 60px;
+      width: 170px;
+      background-color: #fff;
+      border: 1px solid #f1f1f1;
+      padding: 10px 0 3px 10px;
+      font-size: 14px
+  }
+
+  .new-network-legend-detail {
+      width: 170px;
+      height: 22px
+  }
+
+  .new-network-legend-title {
+      color: #9a9a9a;
+      float: left
+  }
+
+  .new-network-legend-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 8px;
+      text-align: center;
+      float: left;
+      margin-top: 3px;
+      margin-right: 10px
+  }
+
+  .legend-purple {
+      background-color: #b46bc5
+  }
+
+  .legend-gray {
+      background-color: #dcdcdc
+  }
+
+  .legend-red {
+      background-color: #fc3939
+  }
+
+  .new-network-link {
+      fill: none;
+      stroke-width: .5px
+  }
+
+  .new-network-node circle {
+      stroke-width: 0
+  }
+
+  .new-network-node {
+      font-size: 10px
+  }
+
+  .new-network-title {
+      font-size: 10px;
+      fill: #333
+  }
+
+  .new-network-click {
+      cursor: pointer
+  }
+
+  .new-network-click:hover circle {
+      stroke-width: 3px!important
+  }
+
+  .new-network-click:hover text {
+      font-weight: 700
+  }
+
+  .new-network-rect {
+      cursor: move
+  }
+
+  .new-network-filter-container {
+      position: absolute;
+      left: 40px;
+      top: 140px;
+      background-color: #fff;
+      width: 100px;
+      border: 1px solid #f1f1f1;
+      padding: 10px 10px 4px;
+      font-size: 14px
+  }
+
+  .new-network-filter-gudong.checked {
+      background-position: 0 0
+  }
+
+  .new-network-filter-gudong.unchecked {
+      background-position: -14px 0
+  }
+
+  .new-network-filter-gaoguan.checked {
+      background-position: 0 -14px
+  }
+
+  .new-network-filter-gaoguan.unchecked {
+      background-position: -14px -14px
+  }
+
+  .new-network-filter-touzi.checked {
+      background-position: 0 -28px
+  }
+
+  .new-network-filter-touzi.unchecked {
+      background-position: -14px -28px
+  }
+
+  .new-network-filter-panjue.checked {
+      background-position: 0 -42px
+  }
+
+  .new-network-filter-panjue.unchecked {
+      background-position: -14px -42px
+  }
+
+  .new-network-filter-gonggao.checked {
+      background-position: 0 -56px
+  }
+
+  .new-network-filter-gonggao.unchecked {
+      background-position: -14px -56px
+  }
+
+  .new-network-filter-lishi.checked {
+      background-position: 0 -70px
+  }
+
+  .new-network-filter-lishi.unchecked {
+      background-position: -14px -70px
+  }
+
+  .new-network-filter-yishi.checked {
+      background-position: 0 -84px
+  }
+
+  .new-network-filter-yishi.unchecked {
+      background-position: -14px -84px
+  }
+
+  @keyframes animations {
+      0% {
+          stroke-width: 0;
+          stroke-opacity: 1
+      }
+
+      to {
+          stroke-width: 10px;
+          stroke-opacity: 0
+      }
+  }
+
+  .new-network-node-twinkle {
+      animation: animations 2s ease infinite
+  }
+
+  .chart-detail-div {
+      position: absolute;
+      left: 0;
+      width: 300px;
+      background-color: #fff;
+      border: 1px solid #e9e9e9;
+      box-shadow: 0 3px 15px 1px rgba(0,0,0,.2);
+      border-radius: 3px;
+      overflow: hidden!important;
+      font-size: 12px;
+      display: none;
+      z-index: 1
+  }
+
+  .chart-detail-content {
+      padding: 20px 10px;
+      width: 300px;
+      min-height: 500px
+  }
+
+  .chart-detail-tag {
+      float: left;
+      margin-top: 2px;
+      width: 3px;
+      height: 14px
+  }
+
+  .chart-detail-title {
+      float: left;
+      padding-left: 5px
+  }
+
+  .chart-detail-title>span {
+      color: #333;
+      font-size: 14px
+  }
+
+  .chart-detail-company-name {
+      font-size: 16px;
+      color: #4ca0ff
+  }
+
+  .chart-detail-company-info {
+      width: 100%;
+      margin-top: 10px;
+      font-size: 12px
+  }
+
+  .chart-detail-table-cell {
+      padding: 5px 5px 5px 0;
+      line-height: 1.1
+  }
+
+  .chart-detail-net-seperate {
+      border-bottom: 1px solid #ddd;
+      margin: 12px 0
+  }
+
+  .chart-detail-seperate-dash {
+      border-bottom: 1px dashed #ddd;
+      margin: 12px 0
+  }
+
+  .chart-detail-sn {
+      position: absolute;
+      border-radius: 3px;
+      background-color: #4ca0ff;
+      color: #fff;
+      padding: 3px 6px 2px;
+      font-size: 12px
+  }
+
+  .chart-detail-detail-info {
+      max-height: 350px;
+      overflow: hidden;
+      position: relative
+  }
+
+  .chart-detail-dishonest {
+      background-color: #fc3939;
+      color: #fff;
+      border-radius: 9px;
+      margin-left: 10px;
+      font-size: 12px;
+      padding: 1px 8px 2px;
+      height: 18px
+  }
+
+  .chart-detail-update-user {
+      margin-right: 15px;
+      text-align: center
+  }
+
+  .chart-detail-update-user img {
+      width: 70px;
+      height: 70px;
+      display: block;
+      margin: 50px auto 20px
+  }
+
+  .chart-detail-update-user span {
+      display: block;
+      color: #919eb6;
+      font-size: 12px
+  }
+
+  .table-sm td,.table-sm tr {
+      padding: 5px 5px 5px 0
+  }
+
+  .block-spinner {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 9999
+  }
+
+  .block-spinner-bar {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      margin-top: -10px;
+      width: 100%;
+      height: 20px;
+      text-align: center
+  }
+
+  .block-spinner-bar .bounce1 {
+      animation-delay: -.32s
+  }
+
+  .block-spinner-bar .bounce2 {
+      animation-delay: -.16s
+  }
+
+  .block-spinner-bar>div {
+      margin: 0 2px;
+      width: 20px;
+      height: 20px;
+      background: #ffc000;
+      border-radius: 100%!important;
+      display: inline-block;
+      animation: bounceDelay 1.4s infinite ease-in-out;
+      animation-fill-mode: both
+  }
+
+  @keyframes bounceDelay {
+      0%,80%,to {
+          transform: scale(0)
+      }
+
+      40% {
+          transform: scale(1)
+      }
+  }
+
+  .chart-operation-section {
+      position: absolute;
+      top: 220px;
+      right: 50px;
+      background-color: #fff
+  }
+
+  .chart-operation-container {
+      width: 32px;
+      border: 1px solid #e9e9e9;
+      box-shadow: 0 0 2px 0 rgba(0,0,0,.1);
+      border-radius: 2px
+  }
+
+
+  .chart-operation-scale-down,.chart-operation-scale-up {
+      width: 30px;
+      height: 30px;
+      background-repeat: no-repeat;
+      background-size: 27px 270px;
+      cursor: pointer
+  }
+
+  .chart-operation-rotate-left,.chart-operation-rotate-right {
+      width: 30px;
+      height: 30px;
+      background-repeat: no-repeat;
+      background-size: 27px 270px;
+      cursor: pointer
+  }
+
+  .chart-operation-exit-fullscreen,.chart-operation-fullscreen {
+      width: 30px;
+      height: 30px;
+      background-repeat: no-repeat;
+      background-size: 27px 270px;
+      cursor: pointer
+  }
+
+
+  .chart-operation-expand,.chart-operation-reset {
+      width: 30px;
+      height: 30px;
+      background-repeat: no-repeat;
+      background-size: 27px 270px;
+      cursor: pointer
+  }
+
+  .chart-operation-collapse {
+      background-position: 1px -241px
+  }
+
+  .chart-operation-exit-fullscreen:hover,.chart-operation-expand:hover,.chart-operation-fullscreen:hover,.chart-operation-reset:hover,.chart-operation-rotate-left:hover,.chart-operation-rotate-right:hover,.chart-operation-scale-down:hover,.chart-operation-scale-up:hover {
+      background-color: #f5f5f5
+  }
+
+  .chart-operation-seperator {
+      height: 2px;
+      background-color: #ececec;
+      margin: 0 3px
+  }
+
+  .save-png {
+      position: absolute;
+      top: 40px;
+      right: 40px
+  }
+
+  .structure-login-wrapper {
+      position: absolute;
+      top: 0;
+      left: 0
+  }
+
+  .structure-mask {
+      width: 100%;
+      display: block
+  }
+
+  .structure-login {
+      width: 400px;
+      height: 160px;
+      background: #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,.15);
+      position: absolute;
+      text-align: center;
+      border-radius: 5px;
+      left: 50%;
+      margin-left: -200px;
+      top: 195px
+  }
+
+  .structure-login h5 {
+      margin-top: 40px;
+      margin-bottom: 20px;
+      color: #43464f
+  }
+
+  .structure-specification {
+      width: 175px;
+      background: #fff;
+      position: absolute;
+      top: 40px;
+      left: 40px;
+      color: #666
+  }
+
+  .structure-border.company.active,.structure-link.company.active,.structure-marker.company.active {
+      stroke: #65a1ea!important
+  }
+
+  .structure-border.person.active,.structure-link.person.active,.structure-marker.person.active {
+      stroke: #f0a23a!important
+  }
+
+  .node-twinkle {
+      animation: animations-twinkle 2s ease infinite
+  }
+
+  @keyframes animations-twinkle {
+      0% {
+          stroke-width: 0;
+          stroke-opacity: 1
+      }
+
+      to {
+          stroke-width: 10px;
+          stroke-opacity: 0
+      }
+  }
+
+  .actual-owner-result {
+      margin-top: 20px
+  }
+
+  .actual-owner-who {
+      color: #618dbe;
+      margin-right: 5px;
+      cursor: pointer
+  }
+
+  .actual-owner-to {
+      color: #618dbe;
+      margin: 0 5px
+  }
+
+  .actual-owner-percent {
+      color: #f5573e
+  }
+
+  .owner-mask-wrapper {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%
+  }
+
+  .owner-mask-wrapper .mask {
+      width: 100%;
+      display: block
+  }
+
+  .owner-mask-wrapper .login {
+      width: 400px;
+      height: 160px;
+      background: #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,.15);
+      position: absolute;
+      text-align: center;
+      border-radius: 5px;
+      left: 50%;
+      margin-left: -200px;
+      top: 195px
+  }
+
+  .owner-mask-wrapper .login h5 {
+      margin-top: 40px;
+      margin-bottom: 20px;
+      color: #43464f
+  }
+
+  .owner-mask-wrapper .vip {
+      width: 600px;
+      background: #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,.15);
+      position: absolute;
+      text-align: center;
+      border-radius: 5px;
+      left: 50%;
+      margin-left: -300px;
+      top: 150px
+  }
+
+}
