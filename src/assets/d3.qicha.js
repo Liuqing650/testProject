@@ -5,26 +5,41 @@ function(r) {
     }
   }
 
-  function a(e, t) {
-    var n = {};
-    for (var r in e) t.indexOf(r) >= 0 || Object.prototype.hasOwnProperty.call(e, r) && (n[r] = e[r]);
-    return n
+  // function a(e, t) {
+  //   var n = {};
+  //   for (var r in e)
+  //     t.indexOf(r) >= 0 || Object.prototype.hasOwnProperty.call(e, r) && (n[r] = e[r]);
+  //   return n
+  // }
+
+  /**
+   *
+   * @param {{}} data 原始数据: {treeData}
+   * @param {[]} keys 隐射键和值: ["pTrees", "cTrees"]
+   */
+  function a(data, keys) {
+    var obj = {};
+    // a(t, ["pTrees", "cTrees"])
+    for (var key in data) {
+      keys.indexOf(key) >= 0 || Object.prototype.hasOwnProperty.call(data, key) && (obj[key] = data[key])
+    };
+    return obj
   }
-  // 创建图形
+  // 创建图形(V)
   function o() {
     re = r(U).width(),
       v.select(U).select("svg").remove(),
-      W = v.select(U)
+      svg = v.select(U)
         .append("svg:svg")
         .attr("width", "100%")
         .attr("id", "structureChart")
         .style("transition", "height " + H + "ms ease-in-out")
         .classed("new-network-rect", !0),
-      G = W.append("svg:g")
+      G = svg.append("svg:g")
         .attr("id", "structureChartLogo")
         .style("transition", "transform " + H + "ms ease-in-out")
         .html(ye), // 启信宝logo
-      W.append("defs").append("marker")
+      svg.append("defs").append("marker")
         .attr("id", "arrow").attr("viewBox", "0 0 12 12")
         .attr("markerUnits", "strokeWidth")
         .attr("refX", 11)
@@ -34,7 +49,7 @@ function(r) {
         .attr("orient", "auto").append("path")
         .attr("d", "M2,2 L10,6 L2,10 L6,6 L2,2")
         .attr("fill", P),
-      W.append("defs").append("marker")
+      svg.append("defs").append("marker")
         .attr("id", "arrowCompany")
         .attr("viewBox", "0 0 12 12")
         .attr("markerUnits", "strokeWidth")
@@ -46,7 +61,7 @@ function(r) {
         .append("path")
         .attr("d", "M2,2 L10,6 L2,10 L6,6 L2,2")
         .attr("fill", A),
-      W.append("defs").append("marker")
+      svg.append("defs").append("marker")
         .attr("id", "arrowPerson")
         .attr("viewBox", "0 0 12 12")
         .attr("markerUnits", "strokeWidth")
@@ -58,7 +73,7 @@ function(r) {
         .append("path")
         .attr("d", "M2,2 L10,6 L2,10 L6,6 L2,2")
         .attr("fill", L),
-      $ = W.append("svg:g")
+      $ = svg.append("svg:g")
         .attr("id", "structureChartContainer"),
       Z = $.append("svg:g").classed("topG", !0)
         .style("transition", "transform " + H + "ms ease-in-out"),
@@ -72,8 +87,9 @@ function(r) {
         .style("transition", "transform " + H + "ms ease-in-out"),
       s(), u()
   }
-  // 创建线条
+  // 创建图像(V)
   function u(e) {
+    // 创建线条
     function t(e, t, n, r) {
       var i = v.linkVertical().x(function (e) {
         return e.x
@@ -131,7 +147,7 @@ function(r) {
     }
 
     // 创建节点
-    function n(e, t, n, a) {
+    function n_node(e, t, n, a) {
       var o = e.selectAll("g.structure-node").data(t, function (e) {
         return e.data.id || (e.data.id = ++he), e.data.id
       }),
@@ -170,8 +186,8 @@ function(r) {
       })
     }
 
+    // 追加文字
     function r(e, t) {
-      // 追加文字
       e.append("svg:text").text(function (e) {
         var t = e.data.name,
           n = f(t, O),
@@ -233,7 +249,7 @@ function(r) {
         return "structure-link mark link-" + e.data.identifier + " " + (e.data.eid && "null" !== e.data.eid ? "company" : "person")
       }).style("stroke", P).style("stroke-width", w).attr("marker-end", "url(#arrow)")
     }
-
+    // 绘制树
     function i(e, t) {
       var n = e.filter(function (e) {
         return e.data.items && e.data.items.length || e.data.hideNodes
@@ -249,16 +265,23 @@ function(r) {
       })
     }
     de = 0;
-    var a = v.hierarchy(te),
-      o = v.hierarchy(ne),
+    var topa = v.hierarchy(topData),
+      bottom_o = v.hierarchy(bottomData),
       s = c(a.descendants()),
       l = s.maxDepth,
-      h = c(o.descendants()),
+      h = c(bottom_o.descendants()),
       p = h.maxDepth;
-    le = re / 2, ae = V * l, oe = V * p, ie = ae + oe + F + 2 * se, W.attr("height", ie), $.style("transform-origin", "0 center 0").attr("transform", "translate(" + (le + ce) + ", " + fe + ")scale(" + K + ")"), G.attr("transform", "translate(" + (le - 141) + ", " + (ae + se - Y - 30) + ")scale(1.5)"),
+    le = re / 2,
+    ae = V * l,
+    oe = V * p,
+    ie = ae + oe + F + 2 * se,
+      W.attr("height", ie),
+      $.style("transform-origin", "0 center 0").attr("transform", "translate(" + (le + ce) + ", " + fe + ")scale(" + K + ")"),
+      G.attr("transform", "translate(" + (le - 141) + ", " + (ae + se - Y - 30) + ")scale(1.5)"),
       function (e, r) {
-        v.tree().nodeSize([B, V])(a), Z.attr("transform", "translate(0, " + (F / 2 + se) + ")");
-        var i = a.descendants();
+        v.tree().nodeSize([B, V])(a),
+        Z.attr("transform", "translate(0, " + (F / 2 + se) + ")");
+        var i = topa.descendants();
         r || (r = {
           x0: i[0].x,
           y0: e - i[0].y,
@@ -266,11 +289,11 @@ function(r) {
           y: e - i[0].y
         }), i.forEach(function (t) {
           t.y = e - t.y, t.data.identifier === r.identifier && (r.x = t.x, r.y = t.y), t.x < 0 && t.x < de && (de = t.x)
-        }), t(Z.select(".topGLinks"), a, -1, r), n(Z.select(".topGNodes"), i, -1, r)
-      }(ae, e),
+          }), t(Z.select(".topGLinks"), a, -1, r), n_node(Z.select(".topGNodes"), i, -1, r)
+      }(ae, e), // ae
       function (e, r, i) {
-        v.tree().nodeSize([B, V])(o), Q.attr("transform", "translate(0, " + (r + F / 2 + se) + ")");
-        var a = o.descendants();
+      v.tree().nodeSize([B, V])(bottom_o), Q.attr("transform", "translate(0, " + (r + F / 2 + se) + ")");
+      var a = bottom_o.descendants();
         i || (i = {
           x0: a[0].x,
           y0: a[0].y,
@@ -278,14 +301,15 @@ function(r) {
           y: a[0].y
         }), a.forEach(function (e) {
           e.data.identifier === i.identifier && (i.x = e.x, i.y = e.y), e.x < 0 && e.x < de && (de = e.x)
-        }), t(Q.select(".bottomGLinks"), o, 1, i), n(Q.select(".bottomGNodes"), a, 1, i)
+          }), t(Q.select(".bottomGLinks"), bottom_o, 1, i), n_node(Q.select(".bottomGNodes"), a, 1, i)
       }(0, ae, e),
-      function () {
+      function () { // (V)
         var e = v.hierarchy(ee),
           t = $.select(".centerG").attr("transform", "translate(0, " + (ae + F / 2 + se) + ")"),
           n = ee.name,
           r = f(n, q),
-          i = r + 30; - i / 2 < de - z / 2 && (de = (z - i) / 2);
+          i = r + 30;
+          - i / 2 < de - z / 2 && (de = (z - i) / 2);
         var a = t.selectAll("rect").data(e.descendants()).enter();
         a.append("svg:rect").attr("x", -i / 2).attr("y", -Y / 2).attr("width", i).attr("height", Y).style("fill", A).attr("rx", "3px").attr("ry", "3px"), a.append("svg:text").attr("x", 0).attr("text-anchor", "middle").attr("dy", "0.35em").text(function (e) {
           return e.data.name
@@ -293,6 +317,7 @@ function(r) {
       }()
   }
 
+  // 缩放(V)
   function s() {
     J = v.zoom().scaleExtent([.5, 2]).on("zoom", function () {
       K = v.event.transform.k, $.attr("transform", "translate(" + (le + ce) + "," + fe + ")scale(" + K + ")")
@@ -308,6 +333,7 @@ function(r) {
     t >= .5 && t <= 2 && (K = t, J.scaleTo(W, K))
   }
 
+  // 计算深度(V)
   function c(e) {
     var t = 0,
       n = !0,
@@ -333,6 +359,7 @@ function(r) {
     }
   }
 
+  // 计算节点内容长度(V)
   function f(e, t) {
     var n = 0;
     if (t = t || 14, e && e.length > 0) {
@@ -344,7 +371,11 @@ function(r) {
         s = e.match(/[.:,\s()]/g),
         l = e.match(/[a-z]/g),
         c = e.match(/[A-Z]/g);
-      u && (r = u.length, n += 8.2 * r), s && (i = s.length, n += 3.2 * i), l && (a = l.length, n += 7.54 * a), c && (o = c.length, n += 9.35 * o), n += (e.length - r - i - a - o) * t
+      u && (r = u.length, n += 8.2 * r),
+      s && (i = s.length, n += 3.2 * i),
+      l && (a = l.length, n += 7.54 * a),
+      c && (o = c.length, n += 9.35 * o),
+      n += (e.length - r - i - a - o) * t
     }
     return n
   }
@@ -355,6 +386,8 @@ function(r) {
   Object.defineProperty(t, "__esModule", {
     value: !0
   });
+
+  // 获取子元素(V)
   var h = Object.assign || function (e) {
     for (var t = 1; t < arguments.length; t++) {
       var n = arguments[t];
@@ -408,9 +441,9 @@ function(r) {
     Q = null,
     J = null,
     K = 1,
-    ee = {},
-    te = {},
-    ne = {},
+    rootData = {}, // ee
+    topData = {},
+    bottomData = {},
     re = 0,
     ie = 0,
     ae = void 0,
@@ -425,14 +458,23 @@ function(r) {
     pe = null,
     ve = null
   t.default = {
+    /**
+     * page: 27695
+     * e: 'divNewNetwork' 字符串
+     * t: treeData 数据
+     * n: nodeClickEvent 节点点击事件
+     * r: nodeToggleEvent
+     * ?: isFullScreen 是否全屏
+     */
     init: function (e, t, n, r) {
       var i = t.pTrees,
         u = t.cTrees,
         s = a(t, ["pTrees", "cTrees"]),
+        // 有可能是一个修改或者下载属性判断
         l = arguments.length > 4 && void 0 !== arguments[4] && arguments[4];
-      K = 1, ce = 0, fe = 0, U = "#" + e, ee = s, te = h({}, ee, {
+      K = 1, ce = 0, fe = 0, U = "#" + e, rootData = s, topData = h({}, rootData, {
         children: i
-      }), ne = h({}, ee, {
+      }), bottomData = h({}, rootData, {
         children: u
       }), pe = n, ve = r, ue = l, o()
     },
