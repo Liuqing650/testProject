@@ -42,7 +42,21 @@ export const createMock = (cofig) => {
         'eid': '@guid',
         'has_problem': '0',
         'identifier': '@integer(0, 10)',
-        'items': [],
+        'items|4': [
+          {
+            'amount': '',
+            'eid': '@guid',
+            'has_problem': '0',
+            'identifier': '@integer(0, 10)',
+            'items': [],
+            'level': '1',
+            'name': '@ctitle(5, 10)有限公司',
+            'percent': '@float(0, 0, 4, 4)',
+            'sh_type': '@cname',
+            'short_name': '@ctitle(5, 10)',
+            'type': 'E'
+          }
+        ],
         'level': '1',
         'name': '@ctitle(5, 10)有限公司',
         'percent': '@float(0, 0, 4, 4)',

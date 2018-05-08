@@ -39,7 +39,7 @@ let rectRx = 2; // X
 let rectWidth = 132; // z 矩形宽度
 let rectHeight = 64; // F 矩形高度
 let chartDom = '#divTreeChart'; // U
-let divWidth = 800; // re
+let divWidth = 1000; // re
 let ie = 0;
 let topNodeHeight = 0; // ae
 let bottomNodeHeight = 0; // oe
@@ -122,9 +122,6 @@ class Tree extends React.Component {
     const arrowCompanyA = '#65A1EA';
     const arrowPersonL = '#F0A23A';
     const conH = 500; // 画布高度
-
-    const zoom = d3.zoom(); // 缩放事件
-    const drag = d3.drag(); // 拖拽事件
 
     console.log('treeData----->', this.props.treeData);
     console.log('d3----->', d3);
@@ -215,10 +212,10 @@ class Tree extends React.Component {
        */
       const createLine = (_dom, layout, index, _nodeData) => { // e, t, n, r
         const linkVertical = d3.linkVertical()
-          .x(function (even) {return even.x;})
-          .y(function (even) {return even.y;});
+          .x(function (even) { return even.x; })
+          .y(function (even) { return even.y; });
         const link = _dom.selectAll('structure-link') // link ==> a
-          .data(layout.links(), (even) => { return even.target.data.id;});
+          .data(layout.links(), (even) => { return even.target.data.id; });
         link.enter()
           .append("path")
           .attr("class", function (even) {
@@ -315,7 +312,7 @@ class Tree extends React.Component {
           return even.data.id;
         });
         const nodes = node.enter()
-          .filter(function (even) {return 0 !== even.depth;})
+          .filter(function (even) { return 0 !== even.depth; })
           .append('g').attr('class', function (even) {
             return "structure-node node" + even.data.identifier
           })
@@ -340,8 +337,8 @@ class Tree extends React.Component {
             // activeNode ==> r
             const activeNode = d3.selectAll(linkClassName).classed('active', true);
             activeNode.filter(".mark.company").attr("marker-end", "url(#arrowCompany)"),
-            activeNode.filter(".mark.person").attr("marker-end", "url(#arrowPerson)"),
-            even.data._selector = linkClassName
+              activeNode.filter(".mark.person").attr("marker-end", "url(#arrowPerson)"),
+              even.data._selector = linkClassName
           }).on("mouseleave", function (even) {
             d3.selectAll(even.data._selector)
               .classed('active', false)
@@ -440,44 +437,44 @@ class Tree extends React.Component {
           }
           return name;
         })
-        .attr("x", textPadding - rectWidth / 2)
-        .attr("y", textY - rectHeight / 2)
-        .attr("dy", textFontSize)
-        .style("fill-opacity", 1)
-        .style("font-size", textFontSize + "px")
-        .attr("fill", textColor)
-        .attr("font-weight", 500)
-        .style("cursor", function (even) {
-          if (even.data.eid && "null" !== even.data.eid)
-            return "pointer"
-        })
-        .on("mouseover", function (even) {
-          if (even.data.eid && "null" !== even.data.eid) {
-            d3.select(this).attr("font-weight", 600);
-          }
-        })
-        .on("mouseleave", function (even) {
-          if (even.data.eid && "null" !== even.data.eid) {
-            d3.select(this).attr("font-weight", 500);
-          }
-        })
-        .on("click", nodeClick).filter(function (even) {
-          return !!even.data._subName
-        })
-        .append("tspan") // 绘制SVG多行文本
-        .attr("x", textPadding - rectWidth / 2)
-        .attr("dy", "1.35em")
-        .attr("fill", textColor)
-        .text(function (even) {
-          let name = even.data._subName;
-          const caclulateTextLength = caclulateNodeContentLength(name, textFontSize);
-          const totalPadding = 2 * textPadding;
-          if (caclulateTextLength + totalPadding > rectWidth) {
-            name = name.substring(0, Math.ceil((rectWidth - totalPadding) / (caclulateTextLength / name.length)) - 2) + "..."
-          }
-          return name;
-        });
-        nodes.filter(function (even) { return even.data.amount})
+          .attr("x", textPadding - rectWidth / 2)
+          .attr("y", textY - rectHeight / 2)
+          .attr("dy", textFontSize)
+          .style("fill-opacity", 1)
+          .style("font-size", textFontSize + "px")
+          .attr("fill", textColor)
+          .attr("font-weight", 500)
+          .style("cursor", function (even) {
+            if (even.data.eid && "null" !== even.data.eid)
+              return "pointer"
+          })
+          .on("mouseover", function (even) {
+            if (even.data.eid && "null" !== even.data.eid) {
+              d3.select(this).attr("font-weight", 600);
+            }
+          })
+          .on("mouseleave", function (even) {
+            if (even.data.eid && "null" !== even.data.eid) {
+              d3.select(this).attr("font-weight", 500);
+            }
+          })
+          .on("click", nodeClick).filter(function (even) {
+            return !!even.data._subName
+          })
+          .append("tspan") // 绘制SVG多行文本
+          .attr("x", textPadding - rectWidth / 2)
+          .attr("dy", "1.35em")
+          .attr("fill", textColor)
+          .text(function (even) {
+            let name = even.data._subName;
+            const caclulateTextLength = caclulateNodeContentLength(name, textFontSize);
+            const totalPadding = 2 * textPadding;
+            if (caclulateTextLength + totalPadding > rectWidth) {
+              name = name.substring(0, Math.ceil((rectWidth - totalPadding) / (caclulateTextLength / name.length)) - 2) + "..."
+            }
+            return name;
+          });
+        nodes.filter(function (even) { return even.data.amount })
           .append("text")
           .text(function (even) {
             let amount = parseFloat(even.data.amount) ? parseFloat(even.data.amount).toFixed(0) : "***";
@@ -506,24 +503,24 @@ class Tree extends React.Component {
           return even.data.percent;
         });
 
-          // nodes ==> e
-          // amount ==> t
-          // shares ===> n
-          // ----------------
-          // rectHeight ==> F
-          // caclulateTextLength ==> n
-          // textFontSize ==> O
-          // subTextFontSize ==> E/k
-          // textPadding ==> S
-          // totalPadding ==> r
-          // subTextColor ==> C
-          // rectWidth ==> z
-          // textWidth ==> i
-          // strokeColor ==> P
-          // strokeWidth ===> w
-          // I ==> I
-          // textColor ==> M
-        percent.filter(function (even) {return !even.data.hidePercent;})
+        // nodes ==> e
+        // amount ==> t
+        // shares ===> n
+        // ----------------
+        // rectHeight ==> F
+        // caclulateTextLength ==> n
+        // textFontSize ==> O
+        // subTextFontSize ==> E/k
+        // textPadding ==> S
+        // totalPadding ==> r
+        // subTextColor ==> C
+        // rectWidth ==> z
+        // textWidth ==> i
+        // strokeColor ==> P
+        // strokeWidth ===> w
+        // I ==> I
+        // textColor ==> M
+        percent.filter(function (even) { return !even.data.hidePercent; })
           .append("text").text(function (even) {
             return (100 * even.data.percent).toFixed(2) + "%"
           })
@@ -545,19 +542,19 @@ class Tree extends React.Component {
           })
           .attr("dy", 1 === index ? "" : "1em");
 
-          shares.filter(function (even) { return !even.data.hidePercent; })
-            .text("持股")
-            .attr("x", -35);
+        shares.filter(function (even) { return !even.data.hidePercent; })
+          .text("持股")
+          .attr("x", -35);
 
-          shares.filter(function (even) { return even.data.hidePercent; })
-            .text("查看股比")
-            .attr("x", -58)
-            .style("cursor", "pointer")
-            .on("click", function (even) {
-              if (nodeToggle) {
-                nodeToggle(even, "percent");
-              }
-            })
+        shares.filter(function (even) { return even.data.hidePercent; })
+          .text("查看股比")
+          .attr("x", -58)
+          .style("cursor", "pointer")
+          .on("click", function (even) {
+            if (nodeToggle) {
+              nodeToggle(even, "percent");
+            }
+          })
         nodes.append("g")
           .attr("transform", "translate(0, " + (1 === index ? -rectHeight / 2 - I : rectHeight / 2 + D) + ")")
           .append("path")
@@ -581,8 +578,8 @@ class Tree extends React.Component {
         // rectNodeColor ==> A
         // handleNodes ===> n
         const handleNodes = nodes.filter(function (even) {
-            return even.data.items && even.data.items.length || even.data.hideNodes;
-          })
+          return even.data.items && even.data.items.length || even.data.hideNodes;
+        })
           .append("g")
           .style("cursor", "pointer")
           .classed("circle", true)
@@ -603,11 +600,11 @@ class Tree extends React.Component {
           .attr("transform",
             "translate(0, " + (index * rectHeight / 2 + index * (R + (1 === index ? D : 0))) + ")");
         handleNodes.append("circle").attr("r", R).style("stroke", rectNodeColor).style("stroke-width", "1px").style("fill", rectNodeColor).classed("node-twinkle", !0),
-        handleNodes.append("line").attr("x1", -4).attr("y1", 0).attr("x2", 4).attr("y2", 0).style("stroke", "#ffffff").style("stroke-width", "1px"),
-        handleNodes.append("line").attr("class", "vertical-line").attr("x1", 0).attr("y1", -4).attr("x2", 0).attr("y2", 4).style("stroke", "#ffffff").style("stroke-width", "1px"),
-        container$.selectAll(".vertical-line").attr("visibility", function (even) {
-          return even.data.children ? "hidden" : ""
-        })
+          handleNodes.append("line").attr("x1", -4).attr("y1", 0).attr("x2", 4).attr("y2", 0).style("stroke", "#ffffff").style("stroke-width", "1px"),
+          handleNodes.append("line").attr("class", "vertical-line").attr("x1", 0).attr("y1", -4).attr("x2", 0).attr("y2", 4).style("stroke", "#ffffff").style("stroke-width", "1px"),
+          container$.selectAll(".vertical-line").attr("visibility", function (even) {
+            return even.data.children ? "hidden" : ""
+          })
       };
 
       leftPosition = 0; // de
@@ -852,7 +849,7 @@ class Tree extends React.Component {
       ye = 0;
       rootData = handleData;
       topData = modifyChildData({}, rootData, { children: top });
-      bottomData = modifyChildData({}, rootData, { children: bottom});
+      bottomData = modifyChildData({}, rootData, { children: bottom });
       nodeClick = _nodeClick;
       nodeToggle = _nodeToggle;
       isFullScreen = arguments.length > 4 && void 0 !== arguments[4] && arguments[4]; // ue
@@ -861,185 +858,11 @@ class Tree extends React.Component {
     };
     // 初始化
     initData();
-
-  // ---------------------------------------------------------
-    const margin = { top: 50, right: 90, bottom: 60, left: 90 },
-      widthTem = 660 - margin.left - margin.right,
-      heightTem = 500 - margin.top - margin.bottom;
-
-    const vscale = {
-      x: 2,
-      y: 1
-    };
-    const orientations = {
-      "horizontal": { // 水平布局
-        size: [widthTem, heightTem],
-        nodeSize: [widthTem / 2, heightTem / 2],
-        svgSize: {
-          width: widthTem + margin.left + margin.right,
-          height: heightTem + margin.top + margin.bottom
-        },
-        gPosition: "translate(" + margin.left + "," + margin.top + ")",
-        linkLayout: (d) => {
-          return "M" + d.y + "," + d.x
-            + "C" + (d.y + d.parent.y) / 2 + "," + d.x
-            + " " + (d.y + d.parent.y) / 2 + "," + d.parent.x
-            + " " + d.parent.y + "," + d.parent.x;
-        },
-        linkLayoutTarget: (d) => {
-          return "M" + d.source.y + "," + d.source.x
-            + "C" + (d.source.y + d.target.y) / 2 + "," + d.source.x
-            + " " + (d.source.y + d.target.y) / 2 + "," + d.target.x
-            + " " + d.target.y + "," + d.target.x;
-        },
-        nodeLayout: (d) => {
-          return "translate(" + d.y + "," + d.x + ")";
-        }
-      },
-      "vertical": { // 垂直布局
-        size: [widthTem, heightTem],
-        nodeSize: [widthTem / 2, heightTem / 2],
-        svgSize: {
-          width: widthTem + margin.left + margin.right,
-          height: heightTem + margin.top + margin.bottom
-        },
-        gPosition: "translate(" + (-margin.left - 30) + "," + margin.top + ")",
-        linkLayout: (d) => {
-          return "M" + d.x * (vscale.x || 1) + "," + d.y / (vscale.y || 1)
-            + "C" + (d.x + d.parent.x) / (vscale.x / 2 || 2) + "," + d.y / (vscale.y || 1)
-            + " " + (d.x + d.parent.x) / (vscale.x / 2 || 2) + "," + d.parent.y / (vscale.y || 1)
-            + " " + d.parent.x * (vscale.x || 1) + "," + d.parent.y / (vscale.y || 1);
-        },
-        linkLayoutTarget: (d) => {
-          return "M" + d.target.x + "," + d.target.y
-            + "C" + (d.target.x + d.source.x) / 2 + "," + d.target.y
-            + " " + (d.target.x + d.source.x) / 2 + "," + d.source.y
-            + " " + d.source.x + "," + d.source.y;
-        },
-        nodeLayout: (d) => {
-          return "translate(" + d.x * (vscale.x || 1) + "," + d.y / (vscale.y || 1) + ")";
-        }
-      }
-    };
-    // 开关函数
-    const toggle = (d) => {
-      if (d.children) {
-        //如果有子节点
-        d._children = d.children; //将该子节点保存到 _children
-        d.children = null;  //将子节点设置为null
-      } else {
-        //如果没有子节点
-        d.children = d._children; //从 _children 取回原来的子节点
-        d._children = null; //将 _children 设置为 null
-      }
-    }
-    const { action } = this.state;
-    const layout = orientations[action];
-
-    const svgTem = d3.select(this.refs.svg)
-      .attr("width", layout.svgSize.width)
-      .attr("height", layout.svgSize.height),
-      g = svgTem.append("g")
-        .attr("transform", layout.gPosition);
-    svgTem.call(zoom.on('zoom', () => {
-      g.attr('transform', `translate(${d3.event.transform.x}, ${d3.event.transform.y}) scale(${d3.event.transform.k})`);
-    }));
-    svgTem.call(drag.on('drag', () => {
-      g.attr("transform", "translate(" + d3.event.y + "," + d3.event.y + ")")
-    }))
-
-    tree = d3.tree()
-      .size(layout.size)
-      // .nodeSize(layout.nodeSize)
-      .separation(function (a, b) { // 扩展层级高度
-        return (a.parent === b.parent ? 1 : 2) / a.depth;
-      });
-    let nodes = d3.hierarchy(treeData, function (d) { // 分配数据到层次布局上,用于建立父子关系
-      return d.children;
-    });
-    nodes = tree(nodes); // 将节点数据映射到树形布局
-
-
-    const link = g.selectAll(".link") // 各个节点之间添加连线
-      // .data(nodes.descendants().slice(1)) // 除了顶级不需要连线,其他节点开始计算节点连线
-      .data(nodes.links()) // 除了顶级不需要连线,其他节点开始计算节点连线
-      .enter().append("path")
-      .attr("class", "link")
-      .attr("d", layout.linkLayoutTarget)
-      // .attr("d", layout.linkLayout);
-    const node = g.selectAll(".node") // 将每个节点添加为一个组
-      .data(nodes.descendants())
-      .enter().append("g")
-      .attr("class", function (d) {
-        return "node" +
-          (d.children ? " node--internal" : " node--leaf");
-      })
-      .attr("transform", layout.nodeLayout);
-    // node.append("rect") // 为每一个节点添加矩形
-    //   .attr("width", 80)
-    //   .attr("height", 60)
-    //   .attr("class", function (d) {
-    //     return d.children ? 'blueRect' : 'whiteRect';
-    //   })
-    //   .attr("x", function (d) {
-    //     return -40;
-    //   })
-    //   .attr("y", function (d) {
-    //     return -30;
-    //   });
-    node.append("circle") // 为每一个节点添加小原点
-      .attr("class", "node-twinkle")
-      .attr("r", function (d) { return d.children ? 8 : 10; })
-      // .attr("cx", function (d) {
-      //   return d.children ? 49 : 53;
-      // });
-    // node.append("text") // 为每一个节点添加文字
-    //   .attr("dy", ".35em")
-    //   .attr("x", -30)
-    //   .attr("class", function (d) {
-    //     return d.children ? 'childText' : 'lastText';
-    //   })
-    //   .style("text-anchor", function (d) {
-    //     // return d.children ? "end" : "start";
-    //     return "start";
-    //   })
-    //   .text(function (d) { return d.data.name; });
-    // // });
   };
 
-  // 重构函数
-  redraw = (source) => {
-    //重新计算节点和连线
-    const nodes = tree.nodes(root);
-    const links = tree.links(nodes);
-
-    //获取节点的update部分
-    const nodeUpdate = svg.selectAll(".node")
-      .data(_nodes, function (d) { return d.name; });
-
-    //获取节点的enter部分
-    const nodeEnter = nodeUpdate.enter();
-
-    //在给enter部分添加新的节点时，添加监听器，应用开关切换函数
-    nodeEnter.append("g")
-      .on("click", function (d) {
-        toggle(d);
-        redraw(d);
-      });
-  }
 
   resetSvg() { // 重置svg
-    const width = 800, height = 600;
-    const svgTem = d3.select('svg');
     d3.select('#divTreeChart').selectAll("*").remove();
-    svgTem.selectAll("*").remove();
-    svgTem.attr('width', width)
-      .attr('height', height);
-  }
-  onSliderChange = (even) => {
-    this.setState({
-      action: even.target.value
-    });
   }
   render() {
     const divStyle = {
@@ -1050,18 +873,6 @@ class Tree extends React.Component {
     return (
       <div>
         <div id="divTreeChart" ref="treeChart" style={divStyle}></div>
-        <div>
-          <svg className="svgWrap" ref="svg">
-          </svg>
-        </div>
-        <Row>
-          <Col span={12}>
-            <Radio.Group value={this.state.action} onChange={this.onSliderChange}>
-              <Radio.Button value="horizontal">水平布局</Radio.Button>
-              <Radio.Button value="vertical">垂直布局</Radio.Button>
-            </Radio.Group>
-          </Col>
-        </Row>
       </div>
     );
   }

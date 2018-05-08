@@ -1,5 +1,5 @@
 import React from 'react';
-import Tree1 from './tree1';
+import Tree3 from './tree3';
 import { mockApi } from '../../../mock';
 // import Tree2 from './tree2';
 
@@ -20,7 +20,7 @@ const Tree = () => {
     return mockApi.createMock(config[model]);
   }
   const arr = [
-    <Tree1 key="111" treeData={getMockData('test')} />,
+    <Tree3 key="111" treeData={getMockData('test')} />,
     // <Tree2 key="222" />
   ];
   return (

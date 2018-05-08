@@ -87,9 +87,9 @@ function(r) {
         .style("transition", "transform " + H + "ms ease-in-out"),
       s(), u()
   }
-  // 创建图像(V)
+  // 创建图像(-V-)
   function u(e) {
-    // 创建线条
+    // 创建线条(V)
     function t(e, t, n, r) {
       var i = v.linkVertical().x(function (e) {
         return e.x
@@ -146,7 +146,7 @@ function(r) {
       }).remove()
     }
 
-    // 创建节点
+    // 创建节点(V)
     function n_node(e, t, n, a) {
       var o = e.selectAll("g.structure-node").data(t, function (e) {
         return e.data.id || (e.data.id = ++he), e.data.id
@@ -173,7 +173,10 @@ function(r) {
         return "structure-border border-" + e.data.identifier + " " + (e.data.eid && "null" !== e.data.eid ? "company" : "person")
       }), u.append("svg:rect").attr("x", -z / 2 - T / 2).attr("y", F / 2 - T / 2).attr("width", z + T).attr("height", D).style("fill", function (e) {
         return e.data.eid && "null" !== e.data.eid ? A : L
-      }), r(u, n), i(u, n);
+      }),
+      // 方法
+      r(u, n), i(u, n);
+      // 继续节点
       var s = e.selectAll("g.structure-node");
       s.transition().duration(H).ease(v.easeQuad).attr("transform", function (e) {
         return "translate(" + e.x + ", " + e.y + ")"
@@ -186,7 +189,7 @@ function(r) {
       })
     }
 
-    // 追加文字
+    // 追加文字(V)
     function r(e, t) {
       e.append("svg:text").text(function (e) {
         var t = e.data.name,
@@ -194,10 +197,15 @@ function(r) {
           r = 2 * S;
         if (n + r > z) {
           var i = Math.ceil((z - r) / (n / t.length));
-          t = e.data.name.substring(0, i), e.data._subName = e.data.name.substring(i)
+          t = e.data.name.substring(0, i),
+          e.data._subName = e.data.name.substring(i)
         }
         return t
-      }).attr("x", S - z / 2).attr("y", j - F / 2).attr("dy", O).style("fill-opacity", 1e-6).style("font-size", O + "px").attr("fill", M).attr("font-weight", 500).style("cursor", function (e) {
+      }).attr("x", S - z / 2).attr("y", j - F / 2)
+      .attr("dy", O).style("fill-opacity", 1e-6)
+      .style("font-size", O + "px").attr("fill", M)
+      .attr("font-weight", 500)
+      .style("cursor", function (e) {
         if (e.data.eid && "null" !== e.data.eid) return "pointer"
       }).on("mouseover", function (e) {
         e.data.eid && "null" !== e.data.eid && v.select(this).attr("font-weight", 600)
@@ -210,7 +218,8 @@ function(r) {
           n = f(t, O),
           r = 2 * S;
         return n + r > z && (t = t.substring(0, Math.ceil((z - r) / (n / t.length)) - 2) + "..."), t
-      }), e.filter(function (e) {
+      }),
+      e.filter(function (e) {
         return e.data.amount
       }).append("svg:text").text(function (e) {
         var t = parseFloat(e.data.amount) ? parseFloat(e.data.amount).toFixed(0) : "***";
@@ -231,16 +240,19 @@ function(r) {
       }).style("font-size", k + "px").attr("fill", C).attr("x", 0).attr("y", function () {
         return 1 === t ? -F / 2 - 5 : F / 2 + D + 5
       }).attr("dx", 10).attr("dy", 1 === t ? "" : "1em");
+
       var r = n.append("svg:text").style("font-size", k + "px").attr("fill", C).attr("y", function () {
         return 1 === t ? -F / 2 - 5 : F / 2 + D + 5
       }).attr("dy", 1 === t ? "" : "1em");
       r.filter(function (e) {
         return !e.data.hidePercent
-      }).text("持股").attr("x", -35), r.filter(function (e) {
+      }).text("持股").attr("x", -35),
+      r.filter(function (e) {
         return e.data.hidePercent
       }).text("查看股比").attr("x", -58).style("cursor", "pointer").on("click", function (e) {
         ve && ve(e, "percent")
-      }), e.append("g").attr("transform", "translate(0, " + (1 === t ? -F / 2 - I : F / 2 + D) + ")").append("path").attr("d", function () {
+      }),
+      e.append("g").attr("transform", "translate(0, " + (1 === t ? -F / 2 - I : F / 2 + D) + ")").append("path").attr("d", function () {
         return v.line()([
           [0, 0],
           [0, I]
@@ -249,7 +261,7 @@ function(r) {
         return "structure-link mark link-" + e.data.identifier + " " + (e.data.eid && "null" !== e.data.eid ? "company" : "person")
       }).style("stroke", P).style("stroke-width", w).attr("marker-end", "url(#arrow)")
     }
-    // 绘制树
+    // 过滤节点数据(V)
     function i(e, t) {
       var n = e.filter(function (e) {
         return e.data.items && e.data.items.length || e.data.hideNodes
@@ -259,11 +271,26 @@ function(r) {
           x0: e.data.x0,
           y0: e.data.y0
         }))
-      }).attr("transform", "translate(0, " + (t * F / 2 + t * (R + (1 === t ? D : 0))) + ")");
-      n.append("circle").attr("r", R).style("stroke", A).style("stroke-width", "1px").style("fill", A).classed("node-twinkle", !0), n.append("line").attr("x1", -4).attr("y1", 0).attr("x2", 4).attr("y2", 0).style("stroke", "#ffffff").style("stroke-width", "1px"), n.append("line").attr("class", "vertical-line").attr("x1", 0).attr("y1", -4).attr("x2", 0).attr("y2", 4).style("stroke", "#ffffff").style("stroke-width", "1px"), $.selectAll(".vertical-line").attr("visibility", function (e) {
+      }).attr("transform",
+      "translate(0, " + (t * F / 2 + t * (R + (1 === t ? D : 0))) + ")");
+      n.append("circle")
+      .attr("r", R)
+      .style("stroke", A)
+      .style("stroke-width", "1px")
+      .style("fill", A)
+      .classed("node-twinkle", !0),
+      n.append("line").attr("x1", -4).attr("y1", 0).attr("x2", 4)
+      .attr("y2", 0).style("stroke", "#ffffff")
+      .style("stroke-width", "1px"),
+      n.append("line").attr("class", "vertical-line")
+      .attr("x1", 0).attr("y1", -4).attr("x2", 0).attr("y2", 4)
+      .style("stroke", "#ffffff").style("stroke-width", "1px"),
+      $.selectAll(".vertical-line").attr("visibility", function (e) {
         return e.data.children ? "hidden" : ""
       })
     }
+
+
     de = 0;
     var topa = v.hierarchy(topData),
       bottom_o = v.hierarchy(bottomData),
@@ -278,8 +305,13 @@ function(r) {
       W.attr("height", ie),
       $.style("transform-origin", "0 center 0").attr("transform", "translate(" + (le + ce) + ", " + fe + ")scale(" + K + ")"),
       G.attr("transform", "translate(" + (le - 141) + ", " + (ae + se - Y - 30) + ")scale(1.5)"),
+
+
+
       function (e, r) {
         v.tree().nodeSize([B, V])(a),
+        d3.tree().nodeSize([nodeSizeX, nodeSizeY])(topLayout);
+
         Z.attr("transform", "translate(0, " + (F / 2 + se) + ")");
         var i = topa.descendants();
         r || (r = {
@@ -287,10 +319,19 @@ function(r) {
           y0: e - i[0].y,
           x: i[0].x,
           y: e - i[0].y
-        }), i.forEach(function (t) {
-          t.y = e - t.y, t.data.identifier === r.identifier && (r.x = t.x, r.y = t.y), t.x < 0 && t.x < de && (de = t.x)
-          }), t(Z.select(".topGLinks"), a, -1, r), n_node(Z.select(".topGNodes"), i, -1, r)
+        }),
+        i.forEach(function (t) {
+          t.y = e - t.y,
+          t.data.identifier === r.identifier && (r.x = t.x, r.y = t.y),
+          t.x < 0 && t.x < de && (de = t.x)
+        }),
+        t(Z.select(".topGLinks"), a, -1, r),
+        n_node(Z.select(".topGNodes"), i, -1, r)
       }(ae, e), // ae
+
+
+
+
       function (e, r, i) {
       v.tree().nodeSize([B, V])(bottom_o), Q.attr("transform", "translate(0, " + (r + F / 2 + se) + ")");
       var a = bottom_o.descendants();
@@ -301,7 +342,9 @@ function(r) {
           y: a[0].y
         }), a.forEach(function (e) {
           e.data.identifier === i.identifier && (i.x = e.x, i.y = e.y), e.x < 0 && e.x < de && (de = e.x)
-          }), t(Q.select(".bottomGLinks"), bottom_o, 1, i), n_node(Q.select(".bottomGNodes"), a, 1, i)
+          }),
+          t(Q.select(".bottomGLinks"), bottom_o, 1, i),
+          n_node(Q.select(".bottomGNodes"), a, 1, i)
       }(0, ae, e),
       function () { // (V)
         var e = v.hierarchy(ee),
