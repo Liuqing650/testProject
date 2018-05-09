@@ -42,7 +42,7 @@ export const createMock = (cofig) => {
         'eid': '@guid',
         'has_problem': '0',
         'identifier': '@integer(0, 1000)',
-        'items|4': [
+        'items|100': [
           {
             'amount': '',
             'eid': '@guid',

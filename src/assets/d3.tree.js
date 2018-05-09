@@ -184,7 +184,13 @@ function(r) {
       var l = o.exit();
       l.transition().duration(H).ease(v.easeQuad).attr("transform", function () {
         return "translate(" + a.x + "," + a.y + ")"
-      }).remove(), l.select("circle").attr("r", 1e-6), l.selectAll("text").transition().duration(H).ease(v.easeQuad).style("fill-opacity", 1e-6), t.forEach(function (e) {
+      }).remove(), l.select("circle").attr("r", 1e-6),
+      l.selectAll("text")
+        .transition()
+        .duration(H)
+        .ease(v.easeQuad)
+        .style("fill-opacity", 1e-6),
+        t.forEach(function (e) {
         e.data.x0 = e.x, e.data.y0 = e.y
       })
     }
@@ -265,8 +271,12 @@ function(r) {
     function i(e, t) {
       var n = e.filter(function (e) {
         return e.data.items && e.data.items.length || e.data.hideNodes
-      }).append("g").style("cursor", "pointer").classed("circle", !0).on("click", function (e) {
-        ve && ve(e, "circle"), e.data.hideNodes || (d(e), u({
+      }).append("g")
+        .style("cursor", "pointer")
+        .classed("circle", !0)
+        .on("click", function (e) {
+        ve && ve(e, "circle"),
+        e.data.hideNodes || (d(e), u({
           identifier: e.data.identifier,
           x0: e.data.x0,
           y0: e.data.y0
@@ -279,13 +289,21 @@ function(r) {
       .style("stroke-width", "1px")
       .style("fill", A)
       .classed("node-twinkle", !0),
-      n.append("line").attr("x1", -4).attr("y1", 0).attr("x2", 4)
-      .attr("y2", 0).style("stroke", "#ffffff")
+      n.append("line")
+      .attr("x1", -4)
+      .attr("y1", 0)
+      .attr("x2", 4)
+      .attr("y2", 0)
+      .style("stroke", "#ffffff")
       .style("stroke-width", "1px"),
-      n.append("line").attr("class", "vertical-line")
-      .attr("x1", 0).attr("y1", -4).attr("x2", 0).attr("y2", 4)
-      .style("stroke", "#ffffff").style("stroke-width", "1px"),
-      $.selectAll(".vertical-line").attr("visibility", function (e) {
+      n.append("line")
+      .attr("class", "vertical-line")
+      .attr("x1", 0).attr("y1", -4)
+      .attr("x2", 0).attr("y2", 4)
+      .style("stroke", "#ffffff")
+      .style("stroke-width", "1px"),
+      $.selectAll(".vertical-line")
+      .attr("visibility", function (e) {
         return e.data.children ? "hidden" : ""
       })
     }

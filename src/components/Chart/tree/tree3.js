@@ -4,7 +4,8 @@ import { Slider, InputNumber, Row, Col, Button } from 'antd';
 import { saveSvgAsPng } from 'save-svg-as-png';
 import $ from 'jquery';
 import treeData from '../../../mock/treeData.json';
-import './chart.less';
+import styles from './chartStyle.less';
+// import './chart.less';
 
 let tree;
 let svg; // G
@@ -480,12 +481,12 @@ class Tree extends React.Component {
           return "translate(" + _nodeData.x + "," + _nodeData.y + ")"
         })
         .remove();
-      nodeExit.select("circle").attr("r", 1);
+      nodeExit.select("circle").attr("r", 1e-6);
       nodeExit.selectAll("text")
         .transition()
         .duration(transitionTime)
         .ease(d3.easeQuad)
-        .style("fill-opacity", 1)
+        .style("fill-opacity", 1e-6)
       layout.forEach(function (even) {
         even.data.x0 = even.x;
         even.data.y0 = even.y
@@ -677,10 +678,29 @@ class Tree extends React.Component {
         })
         .attr("transform",
           "translate(0, " + (index * rectHeight / 2 + index * (R + (1 === index ? D : 0))) + ")");
-        handleNodes.append("circle").attr("r", R).style("stroke", rectNodeColor).style("stroke-width", "1px").style("fill", rectNodeColor).classed("node-twinkle", !0),
-        handleNodes.append("line").attr("x1", -4).attr("y1", 0).attr("x2", 4).attr("y2", 0).style("stroke", "#ffffff").style("stroke-width", "1px"),
-        handleNodes.append("line").attr("class", "vertical-line").attr("x1", 0).attr("y1", -4).attr("x2", 0).attr("y2", 4).style("stroke", "#ffffff").style("stroke-width", "1px"),
-        container$.selectAll(".vertical-line").attr("visibility", function (even) {
+        handleNodes.append("circle")
+          .attr("r", R)
+          .attr('class', styles.nodeTwinkle)
+          .style("stroke", rectNodeColor)
+          .style("stroke-width", "1px")
+          .style("fill", rectNodeColor);
+        handleNodes.append("line")
+          .attr("x1", -4)
+          .attr("y1", 0)
+          .attr("x2", 4)
+          .attr("y2", 0)
+          .style("stroke", "#ffffff")
+          .style("stroke-width", "1px");
+        handleNodes.append("line")
+          .attr("class", "vertical-line")
+          .attr("x1", 0)
+          .attr("y1", -4)
+          .attr("x2", 0)
+          .attr("y2", 4)
+          .style("stroke", "#ffffff")
+          .style("stroke-width", "1px");
+        container$.selectAll(".vertical-line")
+          .attr("visibility", function (even) {
           return even.data.children ? "hidden" : ""
         })
     };
