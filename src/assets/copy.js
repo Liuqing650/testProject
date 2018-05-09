@@ -185,7 +185,8 @@
           }).y(function (e) {
             return e.y
           })
-            , a = e.selectAll("path.structure-link").data(t.links(), function (e) {
+            , a = e.selectAll("path.structure-link")
+            .data(t.links(), function (e) {
               return e.target.data.id
             });
           a.enter().append("path").attr("class", function (e) {
