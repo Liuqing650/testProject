@@ -381,7 +381,8 @@ function(r) {
   // 缩放(V)
   function s() {
     J = v.zoom().scaleExtent([.5, 2]).on("zoom", function () {
-      K = v.event.transform.k, $.attr("transform", "translate(" + (le + ce) + "," + fe + ")scale(" + K + ")")
+      K = v.event.transform.k;
+      $.attr("transform", "translate(" + (le + ce) + "," + fe + ")scale(" + K + ")")
     });
     var e = v.drag().on("drag", function () {
       ce += v.event.dx, fe += v.event.dy, $.attr("transform", "translate(" + (le + ce) + "," + fe + ")scale(" + K + ")")

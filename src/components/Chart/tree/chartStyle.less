@@ -1,4 +1,8 @@
-
+.wrap {
+  border: 1px solid #ccc;
+  width: 1000px;
+  margin: 0 auto;
+}
 .nodeTwinkle {
   animation: animations-twinkle 2s ease infinite;
 }
@@ -11,5 +15,36 @@
   to {
     stroke-width: 10px;
     stroke-opacity: 0
+  }
+}
+
+:global {
+  .new-network-rect {
+      cursor: move
+  }
+  @keyframes animations {
+      0% {
+          stroke-width: 0;
+          stroke-opacity: 1
+      }
+
+      to {
+          stroke-width: 10px;
+          stroke-opacity: 0
+      }
+  }
+
+  .new-network-node-twinkle {
+      animation: animations 2s ease infinite
+  }
+
+  .structure-border.company.active,.structure-link.company.active,.structure-marker.company.active {
+      // stroke: #65a1ea !important;
+      stroke: #42A5F5 !important;
+  }
+
+  .structure-border.person.active,.structure-link.person.active,.structure-marker.person.active {
+      // stroke: #f0a23a !important;
+      stroke: #FF9800 !important;
   }
 }

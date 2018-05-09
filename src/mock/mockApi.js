@@ -42,7 +42,7 @@ export const createMock = (cofig) => {
         'eid': '@guid',
         'has_problem': '0',
         'identifier': '@integer(0, 1000)',
-        'items|100': [
+        'items|10': [
           {
             'amount': '',
             'eid': '@guid',
@@ -69,7 +69,7 @@ export const createMock = (cofig) => {
     [_cofig.p_trees]: [
       {
         'amount': '@float(0, 10000, 4, 4)',
-        'eid': '@guid',
+        'eid': 'null',
         'has_problem': '0',
         'identifier': '@integer(0, 1000)',
         'items': [],

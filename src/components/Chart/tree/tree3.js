@@ -5,17 +5,18 @@ import { saveSvgAsPng } from 'save-svg-as-png';
 import $ from 'jquery';
 import treeData from '../../../mock/treeData.json';
 import styles from './chartStyle.less';
-// import './chart.less';
 
 let tree;
 let svg; // G
+let svgWidth = '100%';
+let svgHeight = 600;
 let rectNodeHeight = 40; // Y
-let rectNodeColor = "#65A1EA"; // A
+let rectNodeColor = "#42A5F5"; // A
 let rectNodeNullIdColor = '#F0A23A'; // L
 let strokeColor = '#979797'; // P
 let borderStockeColor = '#D6D6D6'; // N
 let textColor = '#333333'; // M
-let subTextColor = '#65A1EA'; // C
+let subTextColor = '#42A5F5'; // C
 let textY = 7; // j
 let strokeWidth = 1; // w 线的宽度
 let borderStockeWidth = 1; // T 线的宽度
@@ -23,7 +24,7 @@ let container$;
 let topGroupZ; // Z
 let centerGroup;
 let bottomGroupQ; // Q
-let zoomJ;
+let zoom;
 let nodeFontSize = 17; // q
 let textFontSize = 14; // O
 let subTextFontSize = 12; // E
@@ -56,7 +57,7 @@ let he = 0; // he node 的id为null 时进行自增填充(++he)
 let nodeClick = null; // 节点点击事件 pe
 let nodeToggle = null; // 节点切换事件 ve
 let arrowP = '#979797';
-let arrowCompanyA = '#65A1EA';
+let arrowCompanyA = '#42A5F5';
 let arrowPersonL = '#F0A23A';
 let conH = 500; // H 画布高度
 class Tree extends React.Component {
@@ -69,14 +70,20 @@ class Tree extends React.Component {
   };
   componentDidMount() {
     this.renderTree();
+    this.addFullScreeEvent();
   }
 
   componentDidUpdate(newProps) {
     this.resetSvg();
     this.renderTree();
+    this.addFullScreeEvent();
     if (this.props.activeMenu !== newProps.activeMenu) {
       this.changeChart(this.props.activeMenu);
     }
+  }
+
+  componentWillUnmount() {
+    this.removeFullScreeEvent();
   }
 
   change = (data) => {
@@ -204,8 +211,8 @@ class Tree extends React.Component {
     d3.select(chartDom).select("svg").remove();
     svg = d3.select(chartDom)
       .append('svg:svg')
-      .attr('width', '100%')
-      .attr('height', '600px')
+      .attr('width', svgWidth)
+      .attr('height', svgHeight)
       .attr('id', 'structureChart')
       .style('transition', "height " + transitionTime + "ms ease-in-out")
       .classed("new-network-rect", true)
@@ -715,6 +722,7 @@ class Tree extends React.Component {
     centerWidth = divWidth / 2; // le
     topNodeHeight = nodeSizeY * topMaxDepth; // ae = V * l
     bottomNodeHeight = nodeSizeY * bottomMaxDepth; // oe = V * p
+    // ie ---> 是图形生成完成后计算的svg高度
     ie = topNodeHeight + bottomNodeHeight + rectHeight + 2 * se;
     svg.attr("height", ie);
     container$.style("transform-origin", "0 center 0")
@@ -828,28 +836,46 @@ class Tree extends React.Component {
 
   // 缩放图形
   zoomTree = () => {
-    zoomJ = d3.zoom()
-      .scaleExtent([0.5, 10])
-      .on("zoom", function () {
-        scaleK = d3.event.transform.k;
-        container$.attr("transform", "translate(" + (centerWidth + xe) + "," + ye + ")");
-        container$.attr("scale", scaleK);
-      });
+    zoom = d3.zoom().scaleExtent([0.1, 2]);
+
+    // zoom.on("zoom", function () {
+    //     scaleK = d3.event.transform.k;
+    //     container$.attr("transform", "translate(" + (centerWidth + xe) + "," + ye + ")");
+    //     container$.attr("scale", scaleK);
+    //   });
+
     svg.call(d3.drag().on('drag', () => {
       xe += d3.event.dx;
       ye += d3.event.dy;
-      container$.attr("transform", "translate(" + (centerWidth + xe) + "," + ye + ")");
-      container$.attr("scale", scaleK);
-    }))
+      // container$.attr("transform", "translate(" + (centerWidth + xe) + "," + ye + ")");
+      // container$.attr("scale", scaleK);
+      container$.attr("transform", "translate(" + (centerWidth + xe) + "," + ye + ")scale(" + scaleK + ")");
+    }));
+    svg.call(
+      zoom.on("zoom", () => {
+        scaleK = d3.event.transform.k;
+        // container$.attr("transform", "translate(" + (centerWidth + xe) + "," + ye + ")");
+        // container$.attr("scale", scaleK);
+        container$.attr("transform", "translate(" + (centerWidth + xe) + "," + ye + ")scale(" + scaleK + ")");
+      })
+    );
   };
 
   // 缩放
-  zoomChart = (zoom) => {
-    const zoomScale = Number((scaleK + zoom).toFixed(1));
-    if (zoomScale > 0.5 && zoomScale <= 10) {
-      scaleK = zoomScale;
-      zoomJ.scaleTo(svg, scaleK);
+  zoomChart = (scaleNum, type) => {
+    if (type === 'add') {
+      scaleNum = scaleNum + 0.05 > 2 ? 2 : scaleNum + 0.05;
+    } else {
+      scaleNum = scaleNum - 0.05 < 0 ? 0 : scaleNum - 0.05;
     }
+    scaleK = scaleNum;
+    zoom.scaleTo(svg, scaleK);
+
+    // const zoomScale = Number((scaleK + zoom).toFixed(1));
+    // if (zoomScale > 0.1 && zoomScale <= 2) {
+    //   scaleK = zoomScale;
+    //   zoom.scaleTo(svg, scaleK);
+    // }
   };
 
   // 隐藏子元素
@@ -905,8 +931,8 @@ class Tree extends React.Component {
 
   // ---------------其他事件
   // 缩放按钮事件
-  scaleChart = (zoom) => {
-    this.zoomChart(0.1 + zoom);
+  scaleChart = (type) => {
+    this.zoomChart(scaleK, type);
   };
 
   // 调整图形
@@ -951,6 +977,84 @@ class Tree extends React.Component {
     renderSvgAsPng();
   };
 
+  // 在CircleNetworkGraph注册了fullscreenchange事件
+  handleExitFull = () => {
+    if (document.exitFullScreen) {
+      this.exitFull();
+      document.exitFullScreen();
+    } else if (document.webkitCancelFullScreen) {
+      this.exitFull();
+      document.webkitCancelFullScreen();
+    } else if (document.mozCancelFullScreen) {
+      this.exitFull();
+      document.mozCancelFullScreen();
+    } else if (document.msExitFullscreen) {
+      this.exitFull();
+      document.msExitFullscreen();
+    }
+  };
+  handleFullScreen = () => {
+    const structureBox = document.getElementById('structureBox');
+    if (structureBox.requestFullscreen) {
+      this.fullScreen();
+      structureBox.requestFullscreen();
+    } else if (structureBox.webkitRequestFullScreen) {
+      this.fullScreen();
+      structureBox.webkitRequestFullScreen();
+    } else if (structureBox.mozRequestFullScreen) {
+      this.fullScreen();
+      structureBox.mozRequestFullScreen();
+    } else if (structureBox.msRequestFullscreen) {
+      this.fullScreen();
+      structureBox.msRequestFullscreen();
+    }
+  };
+
+  fullScreenClick = (isFull) => {
+    if (isFull) {
+      this.handleFullScreen();
+    } else {
+      this.handleExitFull();
+    }
+  };
+
+  // 全屏事件
+  fullScreen = () => {
+    const structureBox = d3.select('#structureBox');
+    divWidth = document.body.clientWidth;
+    svgHeight = document.body.clientHeight - 50;
+    structureBox.attr('style', `width: 100%; height: 100%`);
+
+    const divEle = d3.select(chartDom);
+    divEle.attr('style', `width: ${divWidth}px`);
+    this.resetChart();
+  }
+  // 退出事件
+  exitFull = () => {
+    const structureBox = d3.select('#structureBox');
+    divWidth = 1000;
+    svgHeight = 664;
+    structureBox.attr('style', `width: ${divWidth}px; height: auto`);
+    const divEle = d3.select(chartDom);
+    divEle.attr('style', `width: ${divWidth}px`);
+    this.resetChart();
+  }
+
+  addFullScreeEvent = () => {
+    document.addEventListener('fullscreenchange', this.fullScreenHandle);
+    document.addEventListener('webkitfullscreenchange', this.fullScreenHandle);
+    document.addEventListener('mozfullscreenchange', this.fullScreenHandle);
+    document.addEventListener('MSFullscreenChange', this.fullScreenHandle);
+  };
+  removeFullScreeEvent = () => {
+    document.removeEventListener('fullscreenchange', this.fullScreenHandle);
+    document.removeEventListener(
+      'webkitfullscreenchange',
+      this.fullScreenHandle
+    );
+    document.removeEventListener('mozfullscreenchange', this.fullScreenHandle);
+    document.removeEventListener('MSFullscreenChange', this.fullScreenHandle);
+  };
   // 重置图形
   resetChart = () => {
     scaleK = 1;
@@ -959,39 +1063,30 @@ class Tree extends React.Component {
     this.createChart();
   };
 
-  // 重置数据
-  resetData = () => {
-    // ie = 0;
-    // topNodeHeight = 0; // ae
-    // bottomNodeHeight = 0; // oe
-    // leftPosition = 0; // de 获取节点的左边宽度
-  };
-
-
   resetSvg() { // 重置svg
     d3.select('#divTreeChart').selectAll("*").remove();
   }
   render() {
-    const divStyle = {
-      border: '1px solid #ccc',
-      width: divWidth,
-      margin: '0 auto'
-    }
     return (
-      <div>
-        <div id="divTreeChart" ref="treeChart" style={divStyle}></div>
-        <h2 className="test">Test</h2>
+      <div id="structureBox" className={styles.wrap}>
+        <div id="divTreeChart" ref="treeChart" style={{ width: divWidth - 2}}></div>
         <Row>
-          <Col span={8} offset={4}>
+          <Col span={10} offset={4}>
             <Button.Group>
-              <Button type="primary" onClick={() => { this.scaleChart(++scaleK * 0.1)}}>
+              <Button type="primary" onClick={() => { this.scaleChart('add')}}>
                 放大
               </Button>
-              <Button type="primary">
+              <Button type="primary" onClick={() => { this.scaleChart('sub') }}>
                 缩小
               </Button>
               <Button type="primary" onClick={this.saveAsPng}>
                 下载
+              </Button>
+              <Button type="primary" onClick={() => this.fullScreenClick(true)}>
+                全屏
+              </Button>
+              <Button type="primary" onClick={() => this.fullScreenClick(false)}>
+                退出全屏
               </Button>
               <Button type="primary" onClick={this.resetChart}>
                 重置
