@@ -296,9 +296,15 @@ class Tree extends React.Component {
      * _nodeData 节点数据
      */
     const createLine = (_dom, layout, index, _nodeData) => { // e, t, n, r
-      const linkVertical = d3.linkVertical()
-        .x(function (even) { return even.x; })
-        .y(function (even) { return even.y; });
+      // const linkVertical = d3.linkVertical()
+      //   .x(function (even) { return even.x; })
+      //   .y(function (even) { return even.y; });
+      const linkVertical = (d) => {
+        return "M" + d.target.x + "," + d.target.y
+          + "V" + (d.target.y + d.source.y) / 2
+          + "H" + d.source.x
+          + "V" + d.source.y;
+      };
       const link = _dom.selectAll('path.structure-link') // link ==> a
         .data(layout.links(), (even) => { return even.target.data.id; });
       link.enter()
@@ -408,6 +414,7 @@ class Tree extends React.Component {
         .style("cursor", "default").on("mouseover", function (even) {
           // identifier ==> t
           // linkClassName ==> n
+          console.log('even----->', even);
           const identifier = even.data.identifier;
           let linkClassName = ".link-" + identifier + ",.border-" + identifier;
           const createCss = (_even) => {
@@ -422,7 +429,7 @@ class Tree extends React.Component {
           createCss(even);
           // activeNode ==> r
           const activeNode = d3.selectAll(linkClassName).classed('active', true);
-          activeNode.filter(".mark.company").attr("marker-end", "url(#arrowCompany)"),
+            activeNode.filter(".mark.company").attr("marker-end", "url(#arrowCompany)"),
             activeNode.filter(".mark.person").attr("marker-end", "url(#arrowPerson)"),
             even.data._selector = linkClassName
         }).on("mouseleave", function (even) {
@@ -979,17 +986,14 @@ class Tree extends React.Component {
 
   // 在CircleNetworkGraph注册了fullscreenchange事件
   handleExitFull = () => {
+    this.exitFull();
     if (document.exitFullScreen) {
-      this.exitFull();
       document.exitFullScreen();
     } else if (document.webkitCancelFullScreen) {
-      this.exitFull();
       document.webkitCancelFullScreen();
     } else if (document.mozCancelFullScreen) {
-      this.exitFull();
       document.mozCancelFullScreen();
     } else if (document.msExitFullscreen) {
-      this.exitFull();
       document.msExitFullscreen();
     }
   };
@@ -1070,8 +1074,8 @@ class Tree extends React.Component {
     return (
       <div id="structureBox" className={styles.wrap}>
         <div id="divTreeChart" ref="treeChart" style={{ width: divWidth - 2}}></div>
-        <Row>
-          <Col span={10} offset={4}>
+        <Row type="flex" justify="center">
+          <Col span={10}>
             <Button.Group>
               <Button type="primary" onClick={() => { this.scaleChart('add')}}>
                 放大
