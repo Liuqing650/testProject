@@ -307,6 +307,7 @@ class Tree extends React.Component {
       };
       const link = _dom.selectAll('path.structure-link') // link ==> a
         .data(layout.links(), (even) => { return even.target.data.id; });
+      console.log('link---->', link);
       link.enter()
         .append("path")
         .attr("class", function (even) {
@@ -385,6 +386,47 @@ class Tree extends React.Component {
         .remove()
     };
 
+    const creareHoverLine = (node) => {
+
+      /**
+       * // 创建线条
+      createLine(bottomGroupQ.select('.bottomGLinks'), bottomLayout, 1, tempNodeData); // t()
+      // 创建节点
+      createLine(topGroupZ.select('.topGLinks'), topLayout, -1, tempNodeData);
+
+
+    const topLayout = d3.hierarchy(topData); // a d3 ==> v
+    const bottomLayout = d3.hierarchy(bottomData);// o
+       */
+      const _nodeData = node.data;
+      // 1. 获取层级参数
+      const index = _nodeData._layerIndex;
+      const _dom = index > 0 ? topGroupZ.select('.topGLinks') : bottomGroupQ.select('.bottomGLinks');
+      const layout = index > 0 ? d3.hierarchy(_nodeData) : d3.hierarchy(_nodeData);
+      const spiltLinkCss = () => {
+        const tempArr = _nodeData._selector.split(',');
+        let output = '';
+        tempArr.map((item) => {
+          if (item.indexOf('.link-') > -1) {
+            output = item;
+          }
+        });
+        return output;
+      };
+      const selectCss = spiltLinkCss();
+      const linkVertical = (d) => {
+        return "M" + d.target.x + "," + d.target.y
+          + "V" + (d.target.y + d.source.y) / 2
+          + "H" + d.source.x
+          + "V" + d.source.y;
+      };
+      const link = _dom.selectAll(`path${selectCss}`)
+        .data(layout.links(), (even) => { return even.target.data.id; });
+      console.log('selectCss---->', selectCss);
+      console.log('link---->', link);
+
+    }
+
     // 创建节点
     /**
      * _dom node节点的dom
@@ -431,7 +473,9 @@ class Tree extends React.Component {
           const activeNode = d3.selectAll(linkClassName).classed('active', true);
             activeNode.filter(".mark.company").attr("marker-end", "url(#arrowCompany)"),
             activeNode.filter(".mark.person").attr("marker-end", "url(#arrowPerson)"),
-            even.data._selector = linkClassName
+            even.data._selector = linkClassName;
+            even.data._layerIndex = index;
+          creareHoverLine(even);
         }).on("mouseleave", function (even) {
           d3.selectAll(even.data._selector)
             .classed('active', false)
