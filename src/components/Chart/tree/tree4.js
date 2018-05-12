@@ -34,7 +34,7 @@ let rootData = {};
 let topData = {};
 let bottomData = {};
 let D = 4; // D ?
-let I = 20; // I 上方箭头直线
+let I = 20; // I ?
 let R = 7; // R ?
 let transitionTime = 500;// H 间隔时间
 let nodeSizeX = 150;
@@ -217,80 +217,41 @@ class Tree extends React.Component {
       .style('transition', "height " + transitionTime + "ms ease-in-out")
       .classed("new-network-rect", true)
     // 添加svg 标记
-    // svg.append("defs").append("marker")
-    //   .attr("id", "arrow")
-    //   .attr("viewBox", "0 0 12 12")
-    //   .attr("markerUnits", "strokeWidth")
-    //   .attr("refX", 11)
-    //   .attr("refY", 6)
-    //   .attr("markerWidth", 24)
-    //   .attr("markerHeight", 24)
-    //   .attr("orient", "auto").append("path")
-    //   .attr("d", "M4,2 L10,6 L4,10 L4,2")
-    //   .attr("fill", arrowP);
-
-    // svg.append("defs").append("marker")
-    //   .attr("id", "arrowCompany")
-    //   .attr("viewBox", "0 0 12 12")
-    //   .attr("markerUnits", "strokeWidth")
-    //   .attr("refX", 11)
-    //   .attr("refY", 6)
-    //   .attr("markerWidth", 24)
-    //   .attr("markerHeight", 24)
-    //   .attr("orient", "auto")
-    //   .append("path")
-    //   .attr("d", "M4,2 L10,6 L4,10 L4,2")
-    //   .attr("fill", arrowCompanyA);
-
-    // svg.append("defs").append("marker")
-    //   .attr("id", "arrowPerson")
-    //   .attr("viewBox", "0 0 12 12")
-    //   .attr("markerUnits", "strokeWidth")
-    //   .attr("refX", 11)
-    //   .attr("refY", 6)
-    //   .attr("markerWidth", 24)
-    //   .attr("markerHeight", 24)
-    //   .attr("orient", "auto")
-    //   .append("path")
-    //   .attr("d", "M4,2 L10,6 L4,10 L4,2")
-    //   .attr("fill", arrowPersonL);
-
     svg.append("defs").append("marker")
-      .attr("id", "arrow")
-      .attr("viewBox", "0 0 10 10")
+      .attr("id", "arrow").attr("viewBox", "0 0 12 12")
       .attr("markerUnits", "strokeWidth")
-      .attr("refX", 10)
-      .attr("refY", 5)
-      .attr("markerWidth", 20)
-      .attr("markerHeight", 20)
+      .attr("refX", 11)
+      .attr("refY", 6)
+      .attr("markerWidth", 24)
+      .attr("markerHeight", 24)
       .attr("orient", "auto").append("path")
-      .attr("d", "M2,0 L10,5 L2,10 L2,0")
+      .attr("d", "M2,2 L10,6 L2,10 L6,6 L2,2")
       .attr("fill", arrowP);
 
     svg.append("defs").append("marker")
       .attr("id", "arrowCompany")
-      .attr("viewBox", "0 0 10 10")
+      .attr("viewBox", "0 0 12 12")
       .attr("markerUnits", "strokeWidth")
-      .attr("refX", 10)
-      .attr("refY", 5)
-      .attr("markerWidth", 20)
-      .attr("markerHeight", 20)
+      .attr("refX", 11)
+      .attr("refY", 6)
+      .attr("markerWidth", 24)
+      .attr("markerHeight", 24)
       .attr("orient", "auto")
       .append("path")
-      .attr("d", "M2,0 L10,5 L2,10 L2,0")
+      .attr("d", "M2,2 L10,6 L2,10 L6,6 L2,2")
       .attr("fill", arrowCompanyA);
 
     svg.append("defs").append("marker")
       .attr("id", "arrowPerson")
-      .attr("viewBox", "0 0 10 10")
+      .attr("viewBox", "0 0 12 12")
       .attr("markerUnits", "strokeWidth")
-      .attr("refX", 10)
-      .attr("refY", 5)
-      .attr("markerWidth", 20)
-      .attr("markerHeight", 20)
+      .attr("refX", 11)
+      .attr("refY", 6)
+      .attr("markerWidth", 24)
+      .attr("markerHeight", 24)
       .attr("orient", "auto")
       .append("path")
-      .attr("d", "M2,0 L10,5 L2,10 L2,0")
+      .attr("d", "M2,2 L10,6 L2,10 L6,6 L2,2")
       .attr("fill", arrowPersonL);
 
     // 画图
@@ -301,12 +262,10 @@ class Tree extends React.Component {
     topGroupZ = container$.append('svg:g')
       .classed("topG", true).style("transition", "transform " + conH + "ms ease-in-out");
     topGroupZ.append('svg:g').classed("topGLinks", true);
-    topGroupZ.append('svg:g').classed("topGHoverLinks", true);
     topGroupZ.append('svg:g').classed("topGNodes", true);
     // 下边的数据
     bottomGroupQ = container$.append('svg:g').classed("bottomG", true).style("transition", "transform " + conH + "ms ease-in-out");
     bottomGroupQ.append('svg:g').classed("bottomGLinks", true);
-    bottomGroupQ.append('svg:g').classed("bottomGHoverLinks", true);
     bottomGroupQ.append('svg:g').classed("bottomGNodes", true);
     // 内容数据
     container$.append('svg:g').classed("centerG", true).style("transition", "transform " + conH + "ms ease-in-out");
@@ -336,7 +295,7 @@ class Tree extends React.Component {
      * index 系数
      * _nodeData 节点数据
      */
-    const createLine = (_dom, layout, index, _nodeData) => {
+    const createLine = (_dom, layout, index, _nodeData) => { // e, t, n, r
       // const linkVertical = d3.linkVertical()
       //   .x(function (even) { return even.x; })
       //   .y(function (even) { return even.y; });
@@ -369,6 +328,12 @@ class Tree extends React.Component {
         .ease(d3.easeQuad)
         .duration(transitionTime)
         .attr("d", function (even) {
+          // rectNodeHeight ==> Y
+          // index ===> n
+          // rectHeight ==> F
+          // D ==> D
+          // I ==> I
+          // R ==> R
           const temp = {
             source: {
               x: even.source.x,
@@ -385,83 +350,12 @@ class Tree extends React.Component {
         .duration(transitionTime)
         .ease(d3.easeQuad)
         .attr("d", function (even) {
-          const temp = {
-            source: {
-              x: even.source.x,
-              y: even.source.y + index * (0 === even.source.depth ? rectNodeHeight / 2 : 1 === index ? rectHeight / 2 + D + R : rectHeight / 2 + R)
-            },
-            target: {
-              x: even.target.x,
-              y: even.target.y - index * ((1 === index ? rectHeight / 2 : rectHeight / 2 + D) + I)
-            }
-          };
-          return linkVertical(temp);
-        });
-      link.exit()
-        .transition()
-        .duration(transitionTime)
-        .ease(d3.easeQuad)
-        .attr("d", function () {
-          const temp = {
-            x: _nodeData.x, // _nodeData ==> r
-            y: _nodeData.y + index * rectHeight / 2
-          };
-          return linkVertical({
-            source: temp,
-            target: temp
-          })
-        })
-        .remove()
-    };
-    const createHoverLine = (_dom, layout, index, _nodeData) => {
-      // const linkVertical = d3.linkVertical()
-      //   .x(function (even) { return even.x; })
-      //   .y(function (even) { return even.y; });
-      const linkVertical = (d) => {
-        return "M" + d.target.x + "," + d.target.y
-          + "V" + (d.target.y + d.source.y) / 2
-          + "H" + d.source.x
-          + "V" + d.source.y;
-      };
-      const link = _dom.selectAll('path.structure-link') // link ==> a
-        .data(layout.links(), (even) => { return even.target.data.id; });
-      link.enter()
-        .append("path")
-        .attr("class", function (even) {
-          return "structure-link hover-link-" + even.target.data.identifier + " " + (even.target.data.eid && "null" !== even.target.data.eid ? "company" : "person")
-        })
-        .style("fill", "none").attr("d", function () {
-          const temp = {
-            x: _nodeData.x0,
-            y: _nodeData.y0
-          };
-          return linkVertical({
-            source: temp,
-            target: temp
-          })
-        })
-        .style("stroke", 'transparent')
-        .style("stroke-width", 3  )
-        .transition()
-        .ease(d3.easeQuad)
-        .duration(transitionTime)
-        .attr("d", function (even) {
-          const temp = {
-            source: {
-              x: even.source.x,
-              y: even.source.y + index * (0 === even.source.depth ? rectNodeHeight / 2 : 1 === index ? rectHeight / 2 + D + R : rectHeight / 2 + R)
-            },
-            target: {
-              x: even.target.x,
-              y: even.target.y - index * ((1 === index ? rectHeight / 2 : rectHeight / 2 + D) + I)
-            }
-          };
-          return linkVertical(temp);
-        });
-      link.transition()
-        .duration(transitionTime)
-        .ease(d3.easeQuad)
-        .attr("d", function (even) {
+          // rectNodeHeight ==> Y
+          // index ===> n
+          // rectHeight ==> F
+          // D ==> D
+          // I ==> I
+          // R ==> R
           const temp = {
             source: {
               x: even.source.x,
@@ -521,11 +415,11 @@ class Tree extends React.Component {
           // identifier ==> t
           // linkClassName ==> n
           const identifier = even.data.identifier;
-          let linkClassName = ".hover-link-" + identifier + ",.border-" + identifier;
+          let linkClassName = ".link-" + identifier + ",.border-" + identifier;
           const createCss = (_even) => {
             // temp ==> r
             const temp = _even.data.identifier;
-            linkClassName += ",.hover-link-" + temp + ",.border-" + temp;
+            linkClassName += ",.link-" + temp + ",.border-" + temp;
             if (identifier.parent) {
               createCss(identifier.parent);
             }
@@ -534,7 +428,7 @@ class Tree extends React.Component {
           createCss(even);
           // activeNode ==> r
           const activeNode = d3.selectAll(linkClassName).classed('active', true);
-            activeNode.filter(".mark.company").attr("marker-end", "url(#arrowCompany)"),
+          activeNode.filter(".mark.company").attr("marker-end", "url(#arrowCompany)"),
             activeNode.filter(".mark.person").attr("marker-end", "url(#arrowPerson)"),
             even.data._selector = linkClassName
         }).on("mouseleave", function (even) {
@@ -770,6 +664,11 @@ class Tree extends React.Component {
 
     // 过滤节点数据
     const filterNode = (nodes, index) => { // e, t
+      // rectHeight ==> F
+      // R ==> R
+      // D ==> D
+      // rectNodeColor ==> A
+      // handleNodes ===> n
       const self = this;
       const handleNodes = nodes.filter(function (even) {
         return even.data.items && even.data.items.length || even.data.hideNodes;
@@ -791,30 +690,30 @@ class Tree extends React.Component {
           }
         })
         .attr("transform",
-          "translate(0, " + (index * rectHeight / 2 + index * (R + (1 === index ? D : 0))) + ")");
-        handleNodes.append("circle")
-          .attr("r", R)
-          .attr('class', styles.nodeTwinkle)
-          .style("stroke", rectNodeColor)
-          .style("stroke-width", "1px")
-          .style("fill", rectNodeColor);
-        handleNodes.append("line")
-          .attr("x1", -4)
-          .attr("y1", 0)
-          .attr("x2", 4)
-          .attr("y2", 0)
-          .style("stroke", "#ffffff")
-          .style("stroke-width", "1px");
-        handleNodes.append("line")
-          .attr("class", "vertical-line")
-          .attr("x1", 0)
-          .attr("y1", -4)
-          .attr("x2", 0)
-          .attr("y2", 4)
-          .style("stroke", "#ffffff")
-          .style("stroke-width", "1px");
-        container$.selectAll(".vertical-line")
-          .attr("visibility", function (even) {
+        "translate(0, " + (index * rectHeight / 2 + index * (R + (1 === index ? D : 0))) + ")");
+      handleNodes.append("circle")
+        .attr("r", R)
+        .attr('class', styles.nodeTwinkle)
+        .style("stroke", rectNodeColor)
+        .style("stroke-width", "1px")
+        .style("fill", rectNodeColor);
+      handleNodes.append("line")
+        .attr("x1", -4)
+        .attr("y1", 0)
+        .attr("x2", 4)
+        .attr("y2", 0)
+        .style("stroke", "#ffffff")
+        .style("stroke-width", "1px");
+      handleNodes.append("line")
+        .attr("class", "vertical-line")
+        .attr("x1", 0)
+        .attr("y1", -4)
+        .attr("x2", 0)
+        .attr("y2", 4)
+        .style("stroke", "#ffffff")
+        .style("stroke-width", "1px");
+      container$.selectAll(".vertical-line")
+        .attr("visibility", function (even) {
           return even.data.children ? "hidden" : ""
         })
     };
@@ -863,8 +762,6 @@ class Tree extends React.Component {
 
       // 创建线条
       createLine(topGroupZ.select('.topGLinks'), topLayout, -1, tempNodeData); // t()
-      // 创建hover线条
-      createHoverLine(topGroupZ.select('.topGHoverLinks'), topLayout, -1, tempNodeData); // t()
       // 创建节点
       createNode(topGroupZ.select(".topGNodes"), topTreeLayout, -1, tempNodeData); // n()
     };
@@ -895,8 +792,6 @@ class Tree extends React.Component {
       });
       // 创建线条
       createLine(bottomGroupQ.select('.bottomGLinks'), bottomLayout, 1, tempNodeData); // t()
-      // 创建hover线条
-      createHoverLine(bottomGroupQ.select('.bottomGHoverLinks'), bottomLayout, 1, tempNodeData); // t()
       // 创建节点
       createNode(bottomGroupQ.select(".bottomGNodes"), bottomTreeLayout, 1, tempNodeData); // n()
     };
@@ -1177,11 +1072,11 @@ class Tree extends React.Component {
   render() {
     return (
       <div id="structureBox" className={styles.wrap}>
-        <div id="divTreeChart" ref="treeChart" style={{ width: divWidth - 2}}></div>
+        <div id="divTreeChart" ref="treeChart" style={{ width: divWidth - 2 }}></div>
         <Row type="flex" justify="center">
           <Col span={10}>
             <Button.Group>
-              <Button type="primary" onClick={() => { this.scaleChart('add')}}>
+              <Button type="primary" onClick={() => { this.scaleChart('add') }}>
                 放大
               </Button>
               <Button type="primary" onClick={() => { this.scaleChart('sub') }}>
