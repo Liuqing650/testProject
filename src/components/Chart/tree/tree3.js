@@ -12,8 +12,8 @@ let svgWidth = '100%';
 let svgHeight = 600;
 let rectNodeHeight = 40; // Y
 let rectNodeColor = "#42A5F5"; // A
-let rectNodeNullIdColor = '#F0A23A'; // L
-let strokeColor = '#979797'; // P
+let rectNodeNullIdColor = '#FF9800'; // L
+let strokeColor = '#E0E0E0'; // P
 let borderStockeColor = '#D6D6D6'; // N
 let textColor = '#333333'; // M
 let subTextColor = '#42A5F5'; // C
@@ -33,13 +33,15 @@ let scaleK = 1; // K
 let rootData = {};
 let topData = {};
 let bottomData = {};
-let D = 4; // D ?
+let D = 2; // D ?
 let I = 20; // I 上方箭头直线
+let bottomI = 10; // I 下方箭头直线
+let topI = 10; // 上方箭头直线
 let R = 7; // R ?
 let transitionTime = 500;// H 间隔时间
 let nodeSizeX = 150;
 let nodeSizeY = 200; // V 节点高度
-let rectRx = 2; // X
+let rectRx = 0; // X 节点圆角大小
 let rectWidth = 132; // z 矩形宽度
 let rectHeight = 64; // F 矩形高度
 let chartDom = '#divTreeChart'; // U
@@ -56,9 +58,9 @@ let leftPosition = 0; // de 获取节点的左边宽度,eg: -(rectWidth / 2)
 let he = 0; // he node 的id为null 时进行自增填充(++he)
 let nodeClick = null; // 节点点击事件 pe
 let nodeToggle = null; // 节点切换事件 ve
-let arrowP = '#979797';
+let arrowP = '#E0E0E0';
 let arrowCompanyA = '#42A5F5';
-let arrowPersonL = '#F0A23A';
+let arrowPersonL = '#FF9800';
 let conH = 500; // H 画布高度
 class Tree extends React.Component {
 
@@ -191,7 +193,7 @@ class Tree extends React.Component {
   };
 
   /**
-   *
+   * 获取根元素
    * @param {{}} data 原始数据: {treeData}
    * @param {[]} keys 隐射键和值: ["pTrees", "cTrees"]
    */
@@ -199,11 +201,40 @@ class Tree extends React.Component {
     var obj = {};
     // a(t, ["pTrees", "cTrees"])
     for (var key in data) {
-      keys.indexOf(key) >= 0 || Object.prototype.hasOwnProperty.call(data, key) && (obj[key] = data[key])
+      keys.indexOf(key) >= 0 || Object.prototype.hasOwnProperty.call(data, key) && (obj[key] = data[key]);
     };
     return obj;
   }
-
+  /**
+   * 获取子元素
+   * @param {object} rootData 根数据
+   * @param {object} childData 子数据
+   */
+  modifyChildData = (rootData, childData, direction) => {
+    if (!rootData) {
+      return {};
+    }
+    const loopChild = (childrens) => {
+      if (!childrens || childrens.length === 0) {
+        return [];
+      }
+      childrens.map((child, idx) => {
+        child.idx = idx;
+        child.direction = direction;
+        if (child.items) {
+          loopChild(child.items)
+        }
+      });
+    };
+    const obj = Object.assign({}, rootData);
+    if (childData && childData.children) {
+      loopChild(childData.children);
+    }
+    for (let key in childData) {
+      Object.prototype.hasOwnProperty.call(childData, key) && (obj[key] = childData[key]);
+    }
+    return obj;
+  }
   /**
    * 创建dom
    */
@@ -264,7 +295,19 @@ class Tree extends React.Component {
       .attr("markerWidth", 20)
       .attr("markerHeight", 20)
       .attr("orient", "auto").append("path")
-      .attr("d", "M2,0 L10,5 L2,10 L2,0")
+      .attr("d", "M4,2 L10,5 L4,8 L4,2")
+      .attr("fill", arrowP);
+
+    svg.append("defs").append("marker")
+      .attr("id", "topArrow")
+      .attr("viewBox", "0 0 10 10")
+      .attr("markerUnits", "strokeWidth")
+      .attr("refX", 10)
+      .attr("refY", 5)
+      .attr("markerWidth", 20)
+      .attr("markerHeight", 20)
+      .attr("orient", "auto").append("path")
+      .attr("d", "M4,2 L10,5 L4,8 L4,2")
       .attr("fill", arrowP);
 
     svg.append("defs").append("marker")
@@ -277,7 +320,7 @@ class Tree extends React.Component {
       .attr("markerHeight", 20)
       .attr("orient", "auto")
       .append("path")
-      .attr("d", "M2,0 L10,5 L2,10 L2,0")
+      .attr("d", "M4,2 L10,5 L4,8 L4,2")
       .attr("fill", arrowCompanyA);
 
     svg.append("defs").append("marker")
@@ -290,7 +333,7 @@ class Tree extends React.Component {
       .attr("markerHeight", 20)
       .attr("orient", "auto")
       .append("path")
-      .attr("d", "M2,0 L10,5 L2,10 L2,0")
+      .attr("d", "M4,2 L10,5 L4,8 L4,2")
       .attr("fill", arrowPersonL);
 
     // 画图
@@ -341,20 +384,30 @@ class Tree extends React.Component {
       //   .x(function (even) { return even.x; })
       //   .y(function (even) { return even.y; });
       const linkVertical = (d) => {
+        if (!d.hasOwnProperty('index') || d.index === 0) {
+          return "M" + d.target.x + "," + d.target.y
+            + "V" + (d.target.y + d.source.y) / 2
+            + "H" + d.source.x
+            + "V" + d.source.y;
+        }
+        if (d.hasOwnProperty('maxLength') && d.index === (d.maxLength - 1)) {
+          return "M" + d.target.x + "," + d.target.y
+            + "V" + (d.target.y + d.source.y) / 2
+            + "H" + d.source.x;
+        }
         return "M" + d.target.x + "," + d.target.y
-          + "V" + (d.target.y + d.source.y) / 2
-          + "H" + d.source.x
-          + "V" + d.source.y;
+          + "V" + (d.target.y + d.source.y) / 2;
       };
       const link = _dom.selectAll('path.structure-link') // link ==> a
         .data(layout.links(), (even) => { return even.target.data.id; });
-      console.log('link---->', link);
+      // console.log('link---->', link);
       link.enter()
         .append("path")
         .attr("class", function (even) {
           return "structure-link link-" + even.target.data.identifier + " " + (even.target.data.eid && "null" !== even.target.data.eid ? "company" : "person")
         })
-        .style("fill", "none").attr("d", function () {
+        .style("fill", "none")
+        .attr("d", function () {
           const temp = {
             x: _nodeData.x0,
             y: _nodeData.y0
@@ -369,32 +422,56 @@ class Tree extends React.Component {
         .transition()
         .ease(d3.easeQuad)
         .duration(transitionTime)
-        .attr("d", function (even) {
+        .attr("d", function (even, idx) {
+          const handleSource = () => {
+            let output = even.source.y;
+            if (1 === index) {
+              output += index * (0 === even.source.depth ? rectNodeHeight / 2 : rectHeight / 2 + D + R);
+            } else {
+              output += index * (0 === even.source.depth ? rectNodeHeight / 2 : rectHeight / 2 + R) - topI;
+            }
+            return output;
+          };
+          const sourceY = handleSource();
           const temp = {
             source: {
               x: even.source.x,
-              y: even.source.y + index * (0 === even.source.depth ? rectNodeHeight / 2 : 1 === index ? rectHeight / 2 + D + R : rectHeight / 2 + R)
+              y: sourceY
             },
             target: {
               x: even.target.x,
-              y: even.target.y - index * ((1 === index ? rectHeight / 2 : rectHeight / 2 + D) + I)
-            }
+              y: even.target.y - index * (1 === index ? rectHeight / 2 + bottomI + 1 : rectHeight / 2)
+            },
+            index: even.target.data.idx, // 用于判断是画第几条线
+            maxLength: even.source.children.length || 0
           };
           return linkVertical(temp);
         });
       link.transition()
         .duration(transitionTime)
         .ease(d3.easeQuad)
-        .attr("d", function (even) {
+        .attr("d", function (even, idx) {
+          const handleSource = () => {
+            let output = even.source.y;
+            if (1 === index) {
+              output += index * (0 === even.source.depth ? rectNodeHeight / 2 : rectHeight / 2 + D + R);
+            } else {
+              output += index * (0 === even.source.depth ? rectNodeHeight / 2 : rectHeight / 2 + R) - topI;
+            }
+            return output;
+          };
+          const sourceY = handleSource();
           const temp = {
             source: {
               x: even.source.x,
-              y: even.source.y + index * (0 === even.source.depth ? rectNodeHeight / 2 : 1 === index ? rectHeight / 2 + D + R : rectHeight / 2 + R)
+              y: sourceY
             },
             target: {
               x: even.target.x,
-              y: even.target.y - index * ((1 === index ? rectHeight / 2 : rectHeight / 2 + D) + I)
-            }
+              y: even.target.y - index * (1 === index ? rectHeight / 2 + bottomI + 1 : rectHeight / 2)
+            },
+            index: even.target.data.idx, // 用于判断是画第几条线
+            maxLength: even.source.children.length || 0
           };
           return linkVertical(temp);
         });
@@ -420,7 +497,7 @@ class Tree extends React.Component {
       //   .y(function (even) { return even.y; });
       const linkVertical = (d) => {
         return "M" + d.target.x + "," + d.target.y
-          + "V" + (d.target.y + d.source.y) / 2
+          + "V" + ((d.target.y + d.source.y) / 2 + (1 === index ? 1 : 0))
           + "H" + d.source.x
           + "V" + d.source.y;
       };
@@ -447,14 +524,24 @@ class Tree extends React.Component {
         .ease(d3.easeQuad)
         .duration(transitionTime)
         .attr("d", function (even) {
+          const handleSource = () => {
+            let output = even.source.y;
+            if (1 === index) {
+              output += index * (0 === even.source.depth ? rectNodeHeight / 2 : rectHeight / 2 + D + R);
+            } else {
+              output += index * (0 === even.source.depth ? rectNodeHeight / 2 : rectHeight / 2 + R) - topI;
+            }
+            return output;
+          };
+          const sourceY = handleSource();
           const temp = {
             source: {
               x: even.source.x,
-              y: even.source.y + index * (0 === even.source.depth ? rectNodeHeight / 2 : 1 === index ? rectHeight / 2 + D + R : rectHeight / 2 + R)
+              y: sourceY
             },
             target: {
               x: even.target.x,
-              y: even.target.y - index * ((1 === index ? rectHeight / 2 : rectHeight / 2 + D) + I)
+              y: even.target.y - index * (1 === index ? rectHeight / 2 + bottomI + 3 : rectHeight / 2)
             }
           };
           return linkVertical(temp);
@@ -463,14 +550,24 @@ class Tree extends React.Component {
         .duration(transitionTime)
         .ease(d3.easeQuad)
         .attr("d", function (even) {
+          const handleSource = () => {
+            let output = even.source.y;
+            if (1 === index) {
+              output += index * (0 === even.source.depth ? rectNodeHeight / 2 : rectHeight / 2 + D + R);
+            } else {
+              output += index * (0 === even.source.depth ? rectNodeHeight / 2 : rectHeight / 2 + R) - topI;
+            }
+            return output;
+          };
+          const sourceY = handleSource();
           const temp = {
             source: {
               x: even.source.x,
-              y: even.source.y + index * (0 === even.source.depth ? rectNodeHeight / 2 : 1 === index ? rectHeight / 2 + D + R : rectHeight / 2 + R)
+              y: sourceY
             },
             target: {
               x: even.target.x,
-              y: even.target.y - index * ((1 === index ? rectHeight / 2 : rectHeight / 2 + D) + I)
+              y: even.target.y - index * (1 === index ? rectHeight / 2 + bottomI + 3 : rectHeight / 2)
             }
           };
           return linkVertical(temp);
@@ -490,6 +587,23 @@ class Tree extends React.Component {
           })
         })
         .remove()
+      // 顶部直线箭头是需要和根节点相互关联的.只有一个
+      // if (-1 === index) {
+      //   link.append("g")
+      //     .attr("transform", "translate(0, " + -(rectHeight / 2 - 5) + ")")
+      //     .append("path")
+      //     .attr("d", function () {
+      //       return d3.line()([
+      //         [0, 0],
+      //         [0, 0.0000001] // 这里需要一个正数去维持箭头的方向
+      //       ])
+      //     })
+      //     .attr("class", function (even) {
+      //       return "structure-link mark hover-top-arrow"
+      //     })
+      //     .style("stroke", strokeColor)
+      //     .style("stroke-width", strokeWidth).attr("marker-end", "url(#arrow)")
+      // }
     };
 
     const creareHoverLine = (node) => {
@@ -501,8 +615,8 @@ class Tree extends React.Component {
       createLine(topGroupZ.select('.topGLinks'), topLayout, -1, tempNodeData);
 
 
-    const topLayout = d3.hierarchy(topData); // a d3 ==> v
-    const bottomLayout = d3.hierarchy(bottomData);// o
+      const topLayout = d3.hierarchy(topData); // a d3 ==> v
+      const bottomLayout = d3.hierarchy(bottomData);// o
        */
       const _nodeData = node.data;
       // 1. 获取层级参数
@@ -528,10 +642,10 @@ class Tree extends React.Component {
       };
       const link = _dom.selectAll(`path${selectCss}`)
         .data(layout.links(), (even) => { return even.target.data.id; });
-      console.log('selectCss---->', selectCss);
-      console.log('link---->', link);
+      // console.log('selectCss---->', selectCss);
+      // console.log('link---->', link);
 
-    }
+    };
 
     // 创建节点
     /**
@@ -575,17 +689,25 @@ class Tree extends React.Component {
           // 获取线条
           createCss(even);
           // activeNode ==> r
-          const activeNode = d3.selectAll(linkClassName).classed('active', true);
-            activeNode.filter(".mark.company").attr("marker-end", "url(#arrowCompany)"),
-            activeNode.filter(".mark.person").attr("marker-end", "url(#arrowPerson)"),
-            even.data._selector = linkClassName;
-            even.data._layerIndex = index;
+          if (index === -1) {
+            const activeNode = d3.selectAll(linkClassName).classed('active', true);
+            d3.selectAll(linkClassName).classed('active', true);
+            d3.selectAll(".mark.person").attr("marker-end", "url(#arrowPerson)");
+          } else {
+            const activeNode = d3.selectAll(linkClassName).classed('active', true);
+            activeNode.filter(".mark.company").attr("marker-end", "url(#arrowCompany)");
+          }
+          even.data._selector = linkClassName;
+          even.data._layerIndex = index;
           creareHoverLine(even);
         }).on("mouseleave", function (even) {
           d3.selectAll(even.data._selector)
             .classed('active', false)
             .filter(".mark")
             .attr("marker-end", "url(#arrow)")
+          if (index === -1) {
+            d3.selectAll(".mark.person").attr("marker-end", "url(#arrow)");
+          }
         });
 
       // rectHeight ==> F
@@ -610,6 +732,8 @@ class Tree extends React.Component {
         .attr("class", function (even) {
           return "structure-border border-" + even.data.identifier + " " + (even.data.eid && "null" !== even.data.eid ? "company" : "person")
         });
+
+      // 节点下边的蓝色或者橙色线条
       nodes.append("svg:rect")
         .attr("x", -rectWidth / 2 - borderStockeWidth / 2)
         .attr("y", rectHeight / 2 - borderStockeWidth / 2)
@@ -762,18 +886,18 @@ class Tree extends React.Component {
       // strokeWidth ===> w
       // I ==> I
       // textColor ==> M
-      percent.filter(function (even) { return !even.data.hidePercent; })
-        .append("svg:text").text(function (even) {
-          return (100 * even.data.percent).toFixed(2) + "%"
-        })
-        .style("font-size", subTextFontSize + "px")
-        .attr("fill", subTextColor)
-        .attr("x", 0)
-        .attr("y", function () {
-          return 1 === index ? -rectHeight / 2 - 5 : rectHeight / 2 + D + 5
-        })
-        .attr("dx", 10)
-        .attr("dy", 1 === index ? "" : "1em");
+      // percent.filter(function (even) { return !even.data.hidePercent; })
+      //   .append("svg:text").text(function (even) {
+      //     return (100 * even.data.percent).toFixed(2) + "%"
+      //   })
+      //   .style("font-size", subTextFontSize + "px")
+      //   .attr("fill", subTextColor)
+      //   .attr("x", 0)
+      //   .attr("y", function () {
+      //     return 1 === index ? -rectHeight / 2 - 5 : rectHeight / 2 + D + 5
+      //   })
+      //   .attr("dx", 10)
+      //   .attr("dy", 1 === index ? "" : "1em");
 
       // 股票 shares ---> r
       const shares = percent.append("svg:text")
@@ -784,9 +908,9 @@ class Tree extends React.Component {
         })
         .attr("dy", 1 === index ? "" : "1em");
 
-      shares.filter(function (even) { return !even.data.hidePercent; })
-        .text("持股")
-        .attr("x", -35);
+      // shares.filter(function (even) { return !even.data.hidePercent; })
+      //   .text("持股")
+      //   .attr("x", -35);
 
       shares.filter(function (even) { return even.data.hidePercent; })
         .text("查看股比")
@@ -797,19 +921,23 @@ class Tree extends React.Component {
             nodeToggle(even, "percent");
           }
         })
-      nodes.append("g")
-        .attr("transform", "translate(0, " + (1 === index ? -rectHeight / 2 - I : rectHeight / 2 + D) + ")")
-        .append("path")
-        .attr("d", function () {
-          return d3.line()([
-            [0, 0],
-            [0, I]
-          ])
-        })
-        .attr("class", function (even) {
-          return "structure-link mark link-" + even.data.identifier + " " + (even.data.eid && "null" !== even.data.eid ? "company" : "person")
-        })
-        .style("stroke", strokeColor).style("stroke-width", strokeWidth).attr("marker-end", "url(#arrow)")
+      // 底部直线箭头是需要和连线相互关联的.各个节点都有一个
+      if (1 === index) {
+        nodes.append("g")
+          .attr("transform", "translate(0, " + (-rectHeight / 2 - bottomI) + ")")
+          .append("path")
+          .attr("d", function () {
+            return d3.line()([
+              [0, 0],
+              [0, 0.0000001] // 这里需要一个正数去维持箭头的方向
+            ])
+          })
+          .attr("class", function (even) {
+            return "structure-link mark hover-link-" + even.data.identifier + " " + (even.data.eid && "null" !== even.data.eid ? "company" : "person")
+          })
+          .style("stroke", strokeColor)
+          .style("stroke-width", strokeWidth).attr("marker-end", "url(#arrow)")
+      }
     };
 
     // 过滤节点数据
@@ -977,6 +1105,21 @@ class Tree extends React.Component {
         .style("cursor", "pointer")
         .attr("fill", "#ffffff")
         .on("click", nodeClick)
+      rect.append("g")
+        .attr("transform", `translate(0, ${-(rectHeight / 2 - topI / 2)})`)
+        .append("path")
+        .attr("d", function (even) {
+          return d3.line()([
+            [0, 0],
+            [0, 0.0001] // 这里需要一个正数去维持箭头的方向
+          ])
+        })
+        .attr("class", function (even) {
+          return "structure-link mark hover-link-top person";
+        })
+        .style("stroke", strokeColor)
+        .style("stroke-width", strokeWidth)
+        .attr("marker-end", "url(#arrow)")
     };
     const setUp = () => {
       // 执行创建根数据
@@ -1051,15 +1194,6 @@ class Tree extends React.Component {
    * ?: isFullScreen 是否全屏
    */
   initData = (dom, data, _nodeClick, _nodeToggle) => {
-    // 获取子元素
-    const modifyChildData = Object.assign || function (even) {
-      for (let index = 1; index < arguments.length; index++) {
-        const keys = arguments[index];
-        for (var key in keys)
-          Object.prototype.hasOwnProperty.call(keys, key) && (even[key] = keys[key])
-      }
-      return even;
-    }
     const top = data.p_trees;
     const bottom = data.c_trees;
     const handleData = this.modifyData(data, ["p_trees", "c_trees"]);
@@ -1068,8 +1202,8 @@ class Tree extends React.Component {
     xe = 0;
     ye = 0;
     rootData = handleData;
-    topData = modifyChildData({}, rootData, { children: top });
-    bottomData = modifyChildData({}, rootData, { children: bottom });
+    topData = this.modifyChildData(rootData, { children: top }, 'top');
+    bottomData = this.modifyChildData(rootData, { children: bottom }, 'bottom');
     nodeClick = _nodeClick;
     nodeToggle = _nodeToggle;
     isFullScreen = arguments.length > 4 && void 0 !== arguments[4] && arguments[4]; // ue
@@ -1079,8 +1213,8 @@ class Tree extends React.Component {
 
   renderTree = () => {
     // 全局变量
-    console.log('treeData----->', this.props.treeData);
-    console.log('d3----->', d3);
+    // console.log('treeData----->', this.props.treeData);
+    // console.log('d3----->', d3);
     this.initData('divTreeChart', this.props.treeData, this.nodeClickEvent, this.nodeToggleEvent);
   };
 

@@ -7,7 +7,7 @@ const Tree = () => {
   const getMockData = (model) => {
     const config = {
       test: {
-        cTrees: 'c_trees|13',
+        cTrees: 'c_trees|6',
         pTrees: 'p_trees|4',
         cNum: 13,
         pNum: 14

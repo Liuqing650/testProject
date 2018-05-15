@@ -35,7 +35,7 @@ const LayoutPage = ({
             {loopMenu(menus)}
           </Menu>
         </Sider>
-        <Content>
+        <Content style={{background: '#fff'}}>
           {children}
         </Content>
       </Layout>
