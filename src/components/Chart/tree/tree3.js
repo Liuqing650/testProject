@@ -6,62 +6,62 @@ import $ from 'jquery';
 import treeData from '../../../mock/treeData.json';
 import styles from './chartStyle.less';
 
-let tree;
-let svg; // G
-let svgWidth = '100%';
-let svgHeight = 600;
-let rectNodeHeight = 40; // Y
-let rectNodeColor = "#42A5F5"; // A
-let rectNodeNullIdColor = '#FF9800'; // L
-let strokeColor = '#E0E0E0'; // P
-let borderStockeColor = '#D6D6D6'; // N
-let textColor = '#333333'; // M
-let subTextColor = '#42A5F5'; // C
-let textY = 7; // j
-let strokeWidth = 1; // w 线的宽度
-let borderStockeWidth = 1; // T 线的宽度
-let container$;
-let topGroupZ; // Z
-let centerGroup;
-let bottomGroupQ; // Q
-let zoom;
-let nodeFontSize = 17; // q
-let textFontSize = 14; // O
-let subTextFontSize = 12; // E
-let textPadding = 10; // S
-let scaleK = 1; // K
-let rootData = {};
-let topData = {};
-let bottomData = {};
-let D = 2; // D ?
-let I = 20; // I 上方箭头直线
-let bottomI = 10; // I 下方箭头直线
-let topI = 10; // 上方箭头直线
-let R = 7; // R ?
-let transitionTime = 500;// H 间隔时间
-let nodeSizeX = 150;
-let nodeSizeY = 200; // V 节点高度
-let rectRx = 0; // X 节点圆角大小
-let rectWidth = 132; // z 矩形宽度
-let rectHeight = 64; // F 矩形高度
+// let tree;
+let svg; // G +
+let svgWidth = '100%'; // 设计为传入参数 -
+let svgHeight = 600; // 设计为传入参数 -
+let rectNodeHeight = 40; // Y *
+let rectNodeColor = "#42A5F5"; // A *
+let rectNodeNullIdColor = '#FF9800'; // L *
+let strokeColor = '#E0E0E0'; // P *
+let borderStockeColor = '#D6D6D6'; // N *
+let textColor = '#333333'; // M *
+// let subTextColor = '#42A5F5'; // C
+let textY = 7; // j 子节点内容和标题间距 *
+let strokeWidth = 1; // w 线的宽度 *
+let borderStockeWidth = 1; // T 线的宽度 *
+let container$; // +
+let topGroupZ; // Z // +
+let centerGroup; // +
+let bottomGroupQ; // Q +
+let zoom;// +
+let nodeFontSize = 17; // q *
+let textFontSize = 14; // O *
+let subTextFontSize = 12; // E *
+let textPadding = 10; // S *
+let scaleK = 1; // K +
+let rootData = {}; // +
+let topData = {}; // +
+let bottomData = {}; // +
+let D = 2; // D 节点底线高度 *
+// let I = 20; // I 上方箭头直线 [已弃用]
+let bottomI = 10; // I 下方箭头直线 *
+let topI = 10; // 上方箭头直线 *
+let R = 7; // R 展开按钮半径 *
+let transitionTime = 500;// H 间隔时间 *
+let nodeSizeX = 150; // *
+let nodeSizeY = 200; // V 节点高度 *
+let rectRx = 0; // X 节点圆角大小 *
+let rectWidth = 132; // z 矩形宽度 *
+let rectHeight = 64; // F 矩形高度 *
 let chartDom = '#divTreeChart'; // U
-let divWidth = 1000; // re
-let ie = 0;
-let topNodeHeight = 0; // ae
-let bottomNodeHeight = 0; // oe
-let isFullScreen = false; //ue 这个是全屏事件
-let se = 100;
-let centerWidth = 0; // le
-let xe = 0; // ce transform
-let ye = 0; // fe transform
-let leftPosition = 0; // de 获取节点的左边宽度,eg: -(rectWidth / 2)
+let divWidth = 1000; // re +
+let ie = 0; // svg的高度 + svgHeight +
+let topNodeHeight = 0; // ae +
+let bottomNodeHeight = 0; // oe +
+let isFullScreen = false; //ue 这个是全屏事件 +
+let se = 100; // 图形上下的边距 *
+let centerWidth = 0; // le +
+let xe = 0; // ce transform +
+let ye = 0; // fe transform +
+let leftPosition = 0; // de 获取节点的左边宽度,eg: -(rectWidth / 2) +
 let he = 0; // he node 的id为null 时进行自增填充(++he)
 let nodeClick = null; // 节点点击事件 pe
 let nodeToggle = null; // 节点切换事件 ve
-let arrowP = '#E0E0E0';
-let arrowCompanyA = '#42A5F5';
-let arrowPersonL = '#FF9800';
-let conH = 500; // H 画布高度
+let arrowP = '#E0E0E0'; // *
+let arrowCompanyA = '#42A5F5'; // *
+let arrowPersonL = '#FF9800'; // *
+let conH = 500; // H 画布高度 *_替代_transitionTime
 class Tree extends React.Component {
 
   state = {
@@ -123,6 +123,7 @@ class Tree extends React.Component {
   caclulateDepth = (descendants) => {
     let max = 0;
     let next = true;
+    console.log('descendants------->', descendants);
     const loop = (data) => {
       let arr = data[Symbol.iterator]();
       for (let temp; !(next = (temp = arr.next()).done); next = true) {
@@ -134,7 +135,28 @@ class Tree extends React.Component {
         // }
       }
     };
+    // es转换函数
+    let testMax = 0;
+    const loopTest = (data) => {
+      const arr = data[Symbol.iterator]();
+      let testNext = false;
+      let temp;
+      while (!testNext) {
+        testNext = (temp = arr.next()).done;
+        if (!testNext) {
+          const val = temp.value;
+          const depth = val.depth;
+          if (depth > testMax) {
+            testMax = depth;
+          }
+        } else {
+          testNext = true;
+        }
+      }
+    };
     loop(descendants);
+    // loopTest(descendants);
+    // console.log('testMax:--%s----max---%s->', testMax, max);
     return {
       maxDepth: max
     }
@@ -298,17 +320,17 @@ class Tree extends React.Component {
       .attr("d", "M4,2 L10,5 L4,8 L4,2")
       .attr("fill", arrowP);
 
-    svg.append("defs").append("marker")
-      .attr("id", "topArrow")
-      .attr("viewBox", "0 0 10 10")
-      .attr("markerUnits", "strokeWidth")
-      .attr("refX", 10)
-      .attr("refY", 5)
-      .attr("markerWidth", 20)
-      .attr("markerHeight", 20)
-      .attr("orient", "auto").append("path")
-      .attr("d", "M4,2 L10,5 L4,8 L4,2")
-      .attr("fill", arrowP);
+    // svg.append("defs").append("marker")
+    //   .attr("id", "topArrow")
+    //   .attr("viewBox", "0 0 10 10")
+    //   .attr("markerUnits", "strokeWidth")
+    //   .attr("refX", 10)
+    //   .attr("refY", 5)
+    //   .attr("markerWidth", 20)
+    //   .attr("markerHeight", 20)
+    //   .attr("orient", "auto").append("path")
+    //   .attr("d", "M4,2 L10,5 L4,8 L4,2")
+    //   .attr("fill", arrowP);
 
     svg.append("defs").append("marker")
       .attr("id", "arrowCompany")
@@ -606,47 +628,6 @@ class Tree extends React.Component {
       // }
     };
 
-    const creareHoverLine = (node) => {
-
-      /**
-       * // 创建线条
-      createLine(bottomGroupQ.select('.bottomGLinks'), bottomLayout, 1, tempNodeData); // t()
-      // 创建节点
-      createLine(topGroupZ.select('.topGLinks'), topLayout, -1, tempNodeData);
-
-
-      const topLayout = d3.hierarchy(topData); // a d3 ==> v
-      const bottomLayout = d3.hierarchy(bottomData);// o
-       */
-      const _nodeData = node.data;
-      // 1. 获取层级参数
-      const index = _nodeData._layerIndex;
-      const _dom = index > 0 ? topGroupZ.select('.topGLinks') : bottomGroupQ.select('.bottomGLinks');
-      const layout = index > 0 ? d3.hierarchy(_nodeData) : d3.hierarchy(_nodeData);
-      const spiltLinkCss = () => {
-        const tempArr = _nodeData._selector.split(',');
-        let output = '';
-        tempArr.map((item) => {
-          if (item.indexOf('.link-') > -1) {
-            output = item;
-          }
-        });
-        return output;
-      };
-      const selectCss = spiltLinkCss();
-      const linkVertical = (d) => {
-        return "M" + d.target.x + "," + d.target.y
-          + "V" + (d.target.y + d.source.y) / 2
-          + "H" + d.source.x
-          + "V" + d.source.y;
-      };
-      const link = _dom.selectAll(`path${selectCss}`)
-        .data(layout.links(), (even) => { return even.target.data.id; });
-      // console.log('selectCss---->', selectCss);
-      // console.log('link---->', link);
-
-    };
-
     // 创建节点
     /**
      * _dom node节点的dom
@@ -699,7 +680,6 @@ class Tree extends React.Component {
           }
           even.data._selector = linkClassName;
           even.data._layerIndex = index;
-          creareHoverLine(even);
         }).on("mouseleave", function (even) {
           d3.selectAll(even.data._selector)
             .classed('active', false)
@@ -900,27 +880,27 @@ class Tree extends React.Component {
       //   .attr("dy", 1 === index ? "" : "1em");
 
       // 股票 shares ---> r
-      const shares = percent.append("svg:text")
-        .style("font-size", subTextFontSize + "px")
-        .attr("fill", subTextColor)
-        .attr("y", function () {
-          return 1 === index ? -rectHeight / 2 - 5 : rectHeight / 2 + D + 5
-        })
-        .attr("dy", 1 === index ? "" : "1em");
+      // const shares = percent.append("svg:text")
+      //   .style("font-size", subTextFontSize + "px")
+      //   .attr("fill", subTextColor)
+      //   .attr("y", function () {
+      //     return 1 === index ? -rectHeight / 2 - 5 : rectHeight / 2 + D + 5
+      //   })
+      //   .attr("dy", 1 === index ? "" : "1em");
 
       // shares.filter(function (even) { return !even.data.hidePercent; })
       //   .text("持股")
       //   .attr("x", -35);
 
-      shares.filter(function (even) { return even.data.hidePercent; })
-        .text("查看股比")
-        .attr("x", -58)
-        .style("cursor", "pointer")
-        .on("click", function (even) {
-          if (nodeToggle) {
-            nodeToggle(even, "percent");
-          }
-        })
+      // shares.filter(function (even) { return even.data.hidePercent; })
+      //   .text("查看股比")
+      //   .attr("x", -58)
+      //   .style("cursor", "pointer")
+      //   .on("click", function (even) {
+      //     if (nodeToggle) {
+      //       nodeToggle(even, "percent");
+      //     }
+      //   })
       // 底部直线箭头是需要和连线相互关联的.各个节点都有一个
       if (1 === index) {
         nodes.append("g")
@@ -1239,7 +1219,7 @@ class Tree extends React.Component {
       container$.attr("transform", "translate(" + (centerWidth + xe) + ", " + ye + ")scale(" + scaleK + ")");
       svg.attr("transform", "translate(" + (centerWidth - 141) + ", " + (topNodeHeight + se - rectNodeHeight - 30) + ")scale(1.5)");
     } else {
-      isFullScreen = e;
+      isFullScreen = false;
       scaleK = 1;
       xe = 0;
       ye = 0;
